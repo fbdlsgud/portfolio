@@ -1,0 +1,108 @@
+.mainIntroduce {
+    
+    margin-left: 150px;
+    margin-top: 200px;
+    width: 570px;
+
+}
+
+.info1, .info2 {
+    margin: 0;
+}
+
+.info1 {
+    font-size: 30px;
+}
+
+.info2 {
+    font-size: 70px;
+    font-weight: 700;
+    background: linear-gradient(
+      120deg,
+      #ffffff,
+      #ff00cc,
+      #00ffff,
+      #3300ff,
+      #ffcc00,
+      #ffffff
+    );
+    background-size: 400% 400%;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: auroraFlow 7s ease infinite;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes auroraFlow{
+    0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+}
+
+
+.shortBorder {
+    width: 20px;
+    border: 2px solid rgb(101, 93, 93);
+    margin-left: 5px;
+}
+
+.introduce {
+    font-size: 22px;
+}
+
+
+.subMenubar {
+    margin-top: 50px;
+   
+    margin-left: 150px;
+    width: 670px;
+    height: 170px;
+    justify-content: space-around;
+    display: flex;
+    align-items: center;
+}
+
+.subMenu {
+    border: 2px dashed black;
+    border-radius: 100px;
+    width: 170px;
+    height: 170px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: black;
+    flex-direction: column;
+}
+
+.emoji {
+    font-size: 30px;
+}
+
+.text {
+    font-size: 30px;
+}
+
+
+
+
+@keyframes fadeSlide {
+    0% {
+      opacity: 0;
+      transform: translateY(-120px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in {
+    animation: fadeSlide 2s ease forwards;
+  }

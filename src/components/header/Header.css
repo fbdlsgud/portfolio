@@ -1,0 +1,28 @@
+.headerContainer {
+    border-bottom: 1px solid red;
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.headerTitle {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.headerMenu {
+    display: flex;
+    flex-direction: row;
+    gap: 27px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.link {
+    text-decoration: none;
+    color: black;
+}
