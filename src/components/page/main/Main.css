@@ -1,9 +1,13 @@
 .mainIntroduce {
     
-    margin-left: 150px;
-    margin-top: 200px;
+    /* margin-left: 150px;
+    margin-top: 200px; */
     width: 570px;
 
+}
+
+.mainContainer {
+  padding: 100px;
 }
 
 .info1, .info2 {
@@ -58,9 +62,8 @@
 
 
 .subMenubar {
-    margin-top: 50px;
-   
-    margin-left: 150px;
+    /* margin-top: 50px;
+    margin-left: 150px; */
     width: 670px;
     height: 170px;
     justify-content: space-around;

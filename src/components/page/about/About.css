@@ -15,7 +15,7 @@
 }
 
 .title {
-    font-size: 110px;
+    font-size: 90px;
 }
 
 .subtitle {
@@ -25,9 +25,9 @@
 
 
 .aboutIntroduce-right {
-    margin-left: 22%;
+    margin-left: 25%;
     padding: 20px;
-    max-width: 1300px;
+    max-width: 1000px;
     border: 1px solid red;
 }
 
@@ -41,7 +41,7 @@
 }
 
 .intro{
-    font-size: 32px;
+    font-size: 27px;
 }
 
 .introduce .highlight {
