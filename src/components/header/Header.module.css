@@ -1,5 +1,5 @@
 .headerContainer {
-    border-bottom: 1px solid red;
+    background-color: black;
     height: 60px;
     display: flex;
     flex-direction: row;
@@ -20,9 +20,24 @@
     gap: 27px;
     font-size: 24px;
     font-weight: bold;
+    
 }
 
 .link {
     text-decoration: none;
-    color: black;
-}
+    color: white;
+    padding: 8px 12px;
+    font-weight: normal;
+    transition: 0.2s;
+  }
+  
+  .link:hover {
+    color: #007bff;
+  }
+  
+  .link.active {
+    color: #007bff;
+    font-weight: bold;
+    border-bottom: 2px solid #007bff;
+  }
+  

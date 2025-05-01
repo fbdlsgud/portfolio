@@ -1,22 +1,23 @@
-import { Link } from "react-router-dom";
-import "./Header.css";
+import { Link, useLocation } from "react-router-dom";
+import styles from "./Header.module.css"; // 💡 CSS Modules로 변경
 
 function Header(){
-    return (
-        <div className="headerContainer">
-        <div className="headerTitle">
-          <p>인형's 포트폴리오</p>
-        </div>
-        <div className="headerMenu">
-          <Link to={"/"} className="link">Main</Link>
-          <Link to={"/about"} className="link">About</Link>
-          <Link to={"/project"} className="link">Project</Link>
-          <Link to={"/board"} className="link">Board</Link>
-          <Link to={"/contact"} className="link">Contact</Link>
-        </div>
-      </div>
-    )
-};
+  const location = useLocation(); // 현재 경로 확인
 
+  return (
+    <div className={styles.headerContainer}>
+      <div className={styles.headerTitle}>
+        <Link to="/" className={styles.link}>인형's 포트폴리오</Link>
+      </div>
+      <div className={styles.headerMenu}>
+        <Link to="/" className={`${styles.link} ${location.pathname === "/" ? styles.active : ""}`}>Main</Link>
+        <Link to="/about" className={`${styles.link} ${location.pathname === "/about" ? styles.active : ""}`}>About</Link>
+        <Link to="/project" className={`${styles.link} ${location.pathname === "/project" ? styles.active : ""}`}>Project</Link>
+        <Link to="/board" className={`${styles.link} ${location.pathname === "/board" ? styles.active : ""}`}>Board</Link>
+        <Link to="/contact" className={`${styles.link} ${location.pathname === "/contact" ? styles.active : ""}`}>Contact</Link>
+      </div>
+    </div>
+  );
+}
 
 export default Header;

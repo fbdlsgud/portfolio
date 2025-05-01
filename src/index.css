@@ -1,6 +1,9 @@
 body {
   margin: 0;
   font-family: 'font1', sans-serif;
+  
+    overflow-y: scroll; /* 항상 스크롤 공간 확보 → 흔들림 방지 */
+  
 }
 
 code {
@@ -14,4 +17,36 @@ code {
   src: url('./assets/fonts/font1.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+}
+
+
+@keyframes fadeSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(-120px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeSlide 2s ease forwards;
+}
+
+
+@keyframes fadeRightSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(120px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.fade-right {
+  animation: fadeRightSlide 2s ease forwards;
 }

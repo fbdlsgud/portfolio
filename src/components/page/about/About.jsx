@@ -1,5 +1,5 @@
-import { useState,useEffect } from "react";
-import "./About.css";
+import { useState, useEffect } from "react";
+import styles from "./About.module.css";
 
 import { GiSkills } from "react-icons/gi";
 
@@ -8,48 +8,54 @@ import axios from "../../../axios/axiosInstance";
 function About() {
   const [skills, setSkills] = useState([]);
   const [skillModal, setSkillModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [selectedSkill, setSelectedSkill] = useState(null);
 
   const skillUpdate = () => {
     setSkillModal(true);
   };
 
+  const skillEdit = (skill) => {
+    setSelectedSkill(skill);
+    setEditModal(true);
+  };
 
-
-  useEffect(()=>{
-    axios.get("/skillsList")
-    .then((res)=>{
+  useEffect(() => {
+    axios.get("/skillsList").then((res) => {
       console.log("💥 skills 응답:", res.data);
       setSkills(res.data);
-    })
-  },[]);
+    });
+  }, []);
 
   return (
-    <div className="aboutContainer">
-      <div className="aboutIntroduce-left fade-in">
-        <p className="title">About</p>
-        <p className="subtitle">저에 대해 소개해드릴게요!</p>
+    <div className={styles.aboutContainer}>
+      <div className={`${styles.aboutIntroduceLeft} fade-in`}>
+        <p className={styles.title}>About</p>
+        <p className={styles.subtitle}>저에 대해 소개해드릴게요!</p>
       </div>
 
-      <div className="aboutIntroduce-right">
-        <div className="introduce">
-          <p className="hi">Hello World !</p>
-          <p className="intro">
+      <div className={`${styles.aboutIntroduceRight} fade-right`}>
+        <div className={styles.introduce}>
+          <p className={styles.hi}>Hello World !</p>
+          <p className={styles.intro}>
             안녕하세요 ! <br />
             다양한 기술스택을 배우며 성장하는 개발자가 되기 위해 노력하는 {"  "}
-            <span className="highlight">신입 개발자 류인형</span> 입니다.
+            <span className={styles.highlight}> 개발자 류인형</span> 입니다.
           </p>
           <br />
 
-          <p className="subIntro">
+          <p className={styles.subIntro}>
             저는 단순히 동작하는 기능을 만드는 개발자가 되기보다, 사용자가 어떤
-            흐름으로 움직이고, <br />무엇을 느낄지를 먼저 고민하는 개발자가 되고
-            싶습니다. <br />
+            흐름으로 움직이고, <br />
+            무엇을 느낄지를 먼저 고민하는 개발자가 되고 싶습니다. <br />
             눈에 보이지 않는 작은 불편 하나도 놓치지 않고, 한 줄의 코드가
-            사용자에게 더 나은 경험을 줄 수 있도록 <br />고민하며 개발합니다.
+            사용자에게 더 나은 경험을 줄 수 있도록 <br />
+            고민하며 개발합니다.
             <br />
             저에게 '개발자' 란 기술을 통해 문제를 해결하는 사람이라 생각합니다.
             <br /> 저는 그 문제의 중심을 언제나 사용자 입장에서 바라보며, 더
-            쉽고, 더 즐겁게, 더 편리하게 만들기 위해 <br />노력하고 있습니다.
+            쉽고, 더 즐겁게, 더 편리하게 만들기 위해 <br />
+            노력하고 있습니다.
           </p>
         </div>
         {skillModal && (
@@ -59,19 +65,35 @@ function About() {
             skills={skills}
           />
         )}
-        <div className="skillContainer">
-          <div className="skillCon1">
-            <div className="skillTitle">
+        {editModal && (
+          <EditModal
+            onClose={() => {
+              setEditModal(false);
+            }}
+            skill={selectedSkill}
+            setSkills={setSkills}
+          />
+        )}
+        <div className={styles.skillContainer}>
+          <div className={styles.skillCon1}>
+            <div className={styles.skillTitle}>
               {" "}
               <GiSkills size={27} /> Skill
             </div>
-            <button className="skillUp" onClick={skillUpdate}>
+            <button className={styles.skillUp} onClick={skillUpdate}>
               스킬 등록
             </button>
           </div>
-          <div className="skillInfo">
+          <div className={styles.skillInfo}>
             {skills.map((skill, i) => (
-              <div key={i}>🔧 {skill.skillName}</div>
+              <div
+                key={i}
+                className={styles.skillList}
+                onClick={() => skillEdit(skill)}
+              >
+                <div className={styles.skillName}>🔧 {skill.skillName}</div>
+                <div className={styles.skillDesc}> {skill.skillDesc}</div>
+              </div>
             ))}
           </div>
         </div>
@@ -83,42 +105,104 @@ function About() {
 // 스킬업데이트 모달
 function SkillModal({ onClose, setSkills, skills }) {
   const [newSkills, setNewSkills] = useState("");
+  const [newSkillDesc, setNewSkillDesc] = useState("");
 
   const newSkillUpdate = () => {
-    if(skills.includes(newSkills)){
-        alert("이미 등록된 스킬입니다");
-        return;
+    if (skills.includes(newSkills)) {
+      alert("이미 등록된 스킬입니다");
+      return;
     }
 
-    if(newSkills.trim() === "") {
-        alert("빈칸으로 등록할 수 없습니다.");
-        return;
+    if (newSkills.trim() === "") {
+      alert("빈칸으로 등록할 수 없습니다.");
+      return;
     }
 
     if (newSkills.trim() !== "") {
+      axios
+        .post("/addSkill", { skillName: newSkills, skillDesc: newSkillDesc })
+        .then(() => {
+          alert("새로운 스킬이 등록되었습니다!");
+          setNewSkills("");
 
-      axios.post("/addSkill",{skillName : newSkills} )
-      .then(()=>{
-        alert("새로운 스킬이 등록되었습니다!");
-        setNewSkills("");
-        onClose();
-      })
-      .catch((err)=>{
-        console.log(err);
-        alert("등록 실패");
-      })
+          axios.get("/skillsList").then((res) => {
+            setSkills(res.data);
+          });
+
+          onClose();
+        })
+        .catch((err) => {
+          console.log(err);
+          alert("등록 실패");
+        });
     }
   };
 
   return (
-    <div className="skillUpdateModal">
+    <div className={styles.skillUpdateModal}>스킬 등록
       <input
         placeholder="스킬 입력!"
         value={newSkills}
         onChange={(e) => setNewSkills(e.target.value)}
       ></input>
+      <textarea
+        rows={4}
+        placeholder="스킬 설명입력"
+        value={newSkillDesc}
+        onChange={(e) => {
+          setNewSkillDesc(e.target.value);
+        }}
+      />
       <button onClick={newSkillUpdate}>등록</button>
 
+      <button onClick={onClose}>닫기</button>
+    </div>
+  );
+}
+
+function EditModal({ onClose, skill, setSkills }) {
+  const [editSkill, setEditSkill] = useState({
+    sid: skill.sid,
+    skillName: skill.skillName,
+    skillDesc: skill.skillDesc,
+  });
+
+  const skillEdit = () => {
+    axios
+      .put("/skillEdit", editSkill)
+      .then(() => {
+        alert("수정 완료!");
+        onClose();
+        axios.get("/skillsList").then((res) => {
+          setSkills(res.data);
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("수정 실패");
+      });
+  };
+
+  return (
+    <div className={styles.skillUpdateModal}>
+      {" "}
+      스킬 수정
+      <input
+        placeholder="스킬 입력!"
+        value={editSkill.skillName}
+        onChange={(e) =>
+          setEditSkill({ ...editSkill, skillName: e.target.value })
+        }
+      ></input>
+      <textarea
+        rows={4}
+        placeholder="스킬 설명입력"
+        value={editSkill.skillDesc}
+        onChange={(e) =>
+          setEditSkill({ ...editSkill, skillDesc: e.target.value })
+        }
+      />
+      <button onClick={skillEdit}>등록</button>
       <button onClick={onClose}>닫기</button>
     </div>
   );
