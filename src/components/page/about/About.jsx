@@ -21,10 +21,12 @@ function About() {
   };
 
   useEffect(() => {
+    console.log("🔍 API 주소:", process.env.REACT_APP_API_URL);
     axios.get("/skillsList").then((res) => {
       console.log("💥 skills 응답:", res.data);
       setSkills(res.data);
     });
+    
   }, []);
 
   return (
