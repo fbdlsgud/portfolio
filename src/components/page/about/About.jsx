@@ -18,6 +18,7 @@ function About() {
   useEffect(()=>{
     axios.get("/skillsList")
     .then((res)=>{
+      console.log("💥 skills 응답:", res.data);
       setSkills(res.data);
     })
   },[]);
