@@ -1,15 +1,26 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import "./About.css";
 
 import { GiSkills } from "react-icons/gi";
 
+import axios from "../../../axios/axiosInstance";
+
 function About() {
-  const [skills, setSkills] = useState(["Java", "JavaScript"]);
+  const [skills, setSkills] = useState([]);
   const [skillModal, setSkillModal] = useState(false);
 
   const skillUpdate = () => {
     setSkillModal(true);
   };
+
+
+
+  useEffect(()=>{
+    axios.get("/skillsList")
+    .then((res)=>{
+      setSkills(res.data);
+    })
+  },[]);
 
   return (
     <div className="aboutContainer">
@@ -59,7 +70,7 @@ function About() {
           </div>
           <div className="skillInfo">
             {skills.map((skill, i) => (
-              <div key={i}>{skill}</div>
+              <div key={i}>🔧 {skill.skillName}</div>
             ))}
           </div>
         </div>
@@ -84,10 +95,17 @@ function SkillModal({ onClose, setSkills, skills }) {
     }
 
     if (newSkills.trim() !== "") {
-      setSkills([...skills, newSkills]);
-      setNewSkills("");
-      alert("새로운 스킬이 등록되었습니다");
-      onClose();
+
+      axios.post("/addSkill",{skillName : newSkills} )
+      .then(()=>{
+        alert("새로운 스킬이 등록되었습니다!");
+        setNewSkills("");
+        onClose();
+      })
+      .catch((err)=>{
+        console.log(err);
+        alert("등록 실패");
+      })
     }
   };
 
