@@ -1,0 +1,179 @@
+.projectContainer {
+  width: 100%;
+  min-height: 100vh;
+  padding: 60px 5%;
+  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* 좌측 설명 */
+.projectLeft {
+  position: fixed;
+  top: 20%;
+  left: 5%;
+  width: 20%;
+  padding: 20px;
+}
+
+.title {
+  font-size: clamp(48px, 6vw, 80px);
+  font-weight: 900;
+  color: #3a86ff;
+  margin: 0;
+}
+
+.subTitle {
+  font-size: 20px;
+  margin-top: 10px;
+  color: #666;
+}
+
+/* 우측 본문 */
+.projectRight {
+  margin-left: 30%;
+  padding: 40px;
+  max-width: 1000px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  min-height: 600px;
+  box-sizing: border-box;
+}
+
+.addBtn {
+  display: inline-block;
+  background-color: #3a86ff;
+  color: white;
+  font-weight: bold;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.addBtn:hover {
+  background-color: #265cc5;
+}
+
+/* 프로젝트 리스트 */
+.projectList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+}
+
+.projectItem {
+  width: 45%;
+  height: 250px;
+  background-color: #f9f9f9;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.projectItem:hover {
+  transform: translateY(-5px);
+}
+
+.projectSub {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* 🔥 등록 모달 스타일 */
+
+.addContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 600px;
+  max-width: 90%;
+  background-color: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.addName {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.addTitle,
+.addSub,
+.addMain {
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 14px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.addMain {
+  height: 180px;
+}
+
+.addSub {
+  height: 100px;
+}
+
+.addBtn {
+  background-color: #3a86ff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.closeBtn {
+  background-color: #ff3a7c;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.addBtn:hover {
+  background-color: #265cc5;
+}
+
+.closeBtn:hover {
+    background-color: #da2b7c;
+  }
+
+/* 모달 외부 어두운 배경용 (선택) */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+}

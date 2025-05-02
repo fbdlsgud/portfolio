@@ -38,6 +38,7 @@
     font-weight: normal;
     transition: 0.2s;
     margin-left: 17%;
+    cursor: pointer;
   }
 
   .loginName {
