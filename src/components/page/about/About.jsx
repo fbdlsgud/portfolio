@@ -6,7 +6,8 @@ import { GiSkills } from "react-icons/gi";
 import axios from "../../../axios/axiosInstance";
 import { useLogin } from "../../../context/LoginContext";
 
-function About() {
+function About() { 
+  
   const [skills, setSkills] = useState([]);
   const [skillModal, setSkillModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
