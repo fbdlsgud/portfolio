@@ -1,8 +1,26 @@
 import { Link, useLocation } from "react-router-dom";
 import styles from "./Header.module.css"; // 💡 CSS Modules로 변경
+import { useState } from "react";
+import Login from "../login/Login";
+import { useLogin } from "../../context/LoginContext";
 
 function Header(){
   const location = useLocation(); // 현재 경로 확인
+
+  const {username, setUsername} = useLogin();
+
+  const [loginModal, setLoginModal] = useState(false);
+  const loginHandler = () => {
+    setLoginModal(true);
+  }
+  const logoutHandler = () => {
+    if(window.confirm("로그아웃 할까요?")){
+      setUsername(null);
+    }
+    else {
+      return ;
+    }
+  }
 
   return (
     <div className={styles.headerContainer}>
@@ -15,7 +33,17 @@ function Header(){
         <Link to="/project" className={`${styles.link} ${location.pathname === "/project" ? styles.active : ""}`}>Project</Link>
         <Link to="/board" className={`${styles.link} ${location.pathname === "/board" ? styles.active : ""}`}>Board</Link>
         <Link to="/contact" className={`${styles.link} ${location.pathname === "/contact" ? styles.active : ""}`}>Contact</Link>
+        {username?
+        <div className={styles.loginName} onClick={logoutHandler}>{username} 관리자님</div>
+        :
+        <div className={styles.loginLink} onClick={loginHandler}>Login</div>
+        }
       </div>
+      {loginModal && 
+      <>
+      <div className={styles.modalOverlay} onClick={() => setLoginModal(false)} />
+        <Login onClose={()=> setLoginModal(false)}/>
+      </>}
     </div>
   );
 }

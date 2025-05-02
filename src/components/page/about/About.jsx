@@ -4,12 +4,15 @@ import styles from "./About.module.css";
 import { GiSkills } from "react-icons/gi";
 
 import axios from "../../../axios/axiosInstance";
+import { useLogin } from "../../../context/LoginContext";
 
 function About() {
   const [skills, setSkills] = useState([]);
   const [skillModal, setSkillModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [selectedSkill, setSelectedSkill] = useState(null);
+
+  const { username } = useLogin();
 
   const skillUpdate = () => {
     setSkillModal(true);
@@ -21,12 +24,11 @@ function About() {
   };
 
   useEffect(() => {
-      console.log("🔍 API 주소asdsadsazzzz:", process.env.REACT_APP_API_URL);
+    console.log("🔍 API 주소asdsadsazzzz:", process.env.REACT_APP_API_URL);
     axios.get("/skillsList").then((res) => {
       console.log("💥 skills 응답:", res.data);
       setSkills(res.data);
     });
-    
   }, []);
 
   return (
@@ -82,16 +84,26 @@ function About() {
               {" "}
               <GiSkills size={27} /> Skill
             </div>
-            <button className={styles.skillUp} onClick={skillUpdate}>
-              스킬 등록
-            </button>
+            {username ? (
+              <button className={styles.skillUp} onClick={skillUpdate}>
+                스킬 등록
+              </button>
+            ) : (
+              ""
+            )}
           </div>
           <div className={styles.skillInfo}>
             {skills.map((skill, i) => (
               <div
                 key={i}
                 className={styles.skillList}
-                onClick={() => skillEdit(skill)}
+                onClick={() => {
+                  if (username) {
+                    skillEdit(skill);
+                  } else {
+                    return ;
+                  }
+                }}
               >
                 <div className={styles.skillName}>🔧 {skill.skillName}</div>
                 <div className={styles.skillDesc}> {skill.skillDesc}</div>
@@ -141,7 +153,8 @@ function SkillModal({ onClose, setSkills, skills }) {
   };
 
   return (
-    <div className={styles.skillUpdateModal}>스킬 등록
+    <div className={styles.skillUpdateModal}>
+      스킬 등록
       <input
         placeholder="스킬 입력!"
         value={newSkills}
@@ -156,7 +169,6 @@ function SkillModal({ onClose, setSkills, skills }) {
         }}
       />
       <button onClick={newSkillUpdate}>등록</button>
-
       <button onClick={onClose}>닫기</button>
     </div>
   );

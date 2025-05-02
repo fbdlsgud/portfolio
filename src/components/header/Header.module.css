@@ -30,6 +30,23 @@
     font-weight: normal;
     transition: 0.2s;
   }
+
+  .loginLink {
+    text-decoration: none;
+    color: rgb(199, 85, 199);
+    padding: 8px 12px;
+    font-weight: normal;
+    transition: 0.2s;
+    margin-left: 17%;
+  }
+
+  .loginName {
+    text-decoration: none;
+    color: rgb(199, 85, 199);
+    padding: 8px 12px;
+    font-weight: normal;
+    transition: 0.2s;
+  }
   
   .link:hover {
     color: #007bff;
@@ -39,5 +56,16 @@
     color: #007bff;
     font-weight: bold;
     border-bottom: 2px solid #007bff;
+  }
+  
+
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* 💀 어둡게 흐림 */
+    z-index: 998; /* 모달보다 아래지만 화면 위 */
   }
   
