@@ -1,179 +1,197 @@
+/* 전체 레이아웃 */
 .projectContainer {
-  width: 100%;
-  min-height: 100vh;
-  padding: 60px 5%;
-  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-  font-family: "Segoe UI", sans-serif;
-  color: #333;
-  position: relative;
-  box-sizing: border-box;
-}
-
-/* 좌측 설명 */
-.projectLeft {
-  position: fixed;
-  top: 20%;
-  left: 5%;
-  width: 20%;
-  padding: 20px;
-}
-
-.title {
-  font-size: clamp(48px, 6vw, 80px);
-  font-weight: 900;
-  color: #3a86ff;
-  margin: 0;
-}
-
-.subTitle {
-  font-size: 20px;
-  margin-top: 10px;
-  color: #666;
-}
-
-/* 우측 본문 */
-.projectRight {
-  margin-left: 30%;
-  padding: 40px;
-  max-width: 1000px;
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  min-height: 600px;
-  box-sizing: border-box;
-}
-
-.addBtn {
-  display: inline-block;
-  background-color: #3a86ff;
-  color: white;
-  font-weight: bold;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.addBtn:hover {
-  background-color: #265cc5;
-}
-
-/* 프로젝트 리스트 */
-.projectList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  justify-content: center;
-}
-
-.projectItem {
-  width: 45%;
-  height: 250px;
-  background-color: #f9f9f9;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  padding: 20px;
-  box-sizing: border-box;
-  transition: transform 0.2s ease;
-  cursor: pointer;
-}
-
-.projectItem:hover {
-  transform: translateY(-5px);
-}
-
-.projectSub {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #666;
-}
-
-/* 🔥 등록 모달 스타일 */
-
-.addContainer {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 600px;
-  max-width: 90%;
-  background-color: white;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  transform: translate(-50%, -50%);
-  z-index: 1000;
-}
-
-.addName {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #333;
-  text-align: center;
-}
-
-.addTitle,
-.addSub,
-.addMain {
-  width: 100%;
-  margin-bottom: 16px;
-  padding: 14px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  resize: none;
-  box-sizing: border-box;
-}
-
-.addMain {
-  height: 180px;
-}
-
-.addSub {
-  height: 100px;
-}
-
-.addBtn {
-  background-color: #3a86ff;
-  color: white;
-  font-weight: bold;
-  border: none;
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.closeBtn {
-  background-color: #ff3a7c;
-  color: white;
-  font-weight: bold;
-  border: none;
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.addBtn:hover {
-  background-color: #265cc5;
-}
-
-.closeBtn:hover {
-    background-color: #da2b7c;
+    width: 100%;
+    min-height: 100vh;
+    padding: 80px 5%;
+    background: linear-gradient(135deg, #f8f9fc, #e0e7ff);
+    font-family: 'Segoe UI', sans-serif;
+    color: #1f2937;
+    box-sizing: border-box;
   }
-
-/* 모달 외부 어두운 배경용 (선택) */
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 999;
-}
+  
+  /* 좌측 소개 */
+  .projectLeft {
+    position: fixed;
+    top: 20%;
+    left: 5%;
+    width: 20%;
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: clamp(48px, 6vw, 72px);
+    font-weight: 900;
+    color: #3b82f6;
+    margin: 0;
+  }
+  
+  .subTitle {
+    font-size: 18px;
+    margin-top: 12px;
+    color: #6b7280;
+  }
+  
+  /* 우측 영역 */
+  .projectRight {
+    margin-left: 30%;
+    padding: 50px;
+    max-width: 1000px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    min-height: 600px;
+  }
+  
+  /* 등록 버튼 */
+  .addBtn {
+    background-color: #3b82f6;
+    color: white;
+    font-weight: bold;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 30px;
+    transition: background-color 0.2s;
+  }
+  
+  .addBtn:hover {
+    background-color: #2563eb;
+  }
+  
+  /* 프로젝트 리스트 */
+  .projectList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+  }
+  
+  .projectItem {
+    width: 45%;
+    min-height: 240px;
+    background: #f3f4f6;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    padding: 20px 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .projectItem:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .projectItem > p {
+    font-size: 20px;
+    font-weight: bold;
+    color: #111827;
+    margin-bottom: 12px;
+  }
+  
+  .projectSub p {
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #374151;
+  }
+  
+  .projSkill,
+  .projPeople,
+  .projDate,
+  .projSub {
+    line-height: 1.5;
+  }
+  
+  .projSkill::before {
+    content: "🧪 ";
+  }
+  .projPeople::before {
+    content: "👥 ";
+  }
+  .projDate::before {
+    content: "📅 ";
+  }
+  .projSub::before {
+    content: "📝 ";
+  }
+  
+  /* 모달 */
+  .addContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 600px;
+    max-width: 95%;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+  }
+  
+  .addName {
+    font-size: 26px;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  
+  .addTitle,
+  .addSkill,
+  .addPeople,
+  .addDate,
+  .addSub,
+  .addMain {
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 14px;
+    font-size: 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    box-sizing: border-box;
+    background-color: #f9fafb;
+    color: #1f2937;
+  }
+  
+  .addMain {
+    height: 160px;
+  }
+  
+  .addSub {
+    height: 80px;
+  }
+  
+  .closeBtn {
+    background-color: #ef4444;
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 10px;
+    margin-left: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .closeBtn:hover {
+    background-color: #dc2626;
+  }
+  
+  /* 어두운 배경 */
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+  
