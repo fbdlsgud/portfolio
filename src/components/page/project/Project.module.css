@@ -1,137 +1,152 @@
-/* 전체 레이아웃 */
+/* 🌌 전체 배경 */
 .projectContainer {
     width: 100%;
     min-height: 100vh;
-    padding: 80px 5%;
-    background: linear-gradient(135deg, #f8f9fc, #e0e7ff);
-    font-family: 'Segoe UI', sans-serif;
+    padding: 100px 5%;
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    font-family: 'Segoe UI', 'Pretendard', sans-serif;
     color: #1f2937;
     box-sizing: border-box;
+    position: relative;
   }
   
-  /* 좌측 소개 */
+  /* 🎯 좌측 고정 소개 */
   .projectLeft {
     position: fixed;
     top: 20%;
-    left: 5%;
     width: 20%;
     padding: 20px;
   }
   
   .title {
-    font-size: clamp(48px, 6vw, 72px);
+    font-size: clamp(52px, 6vw, 76px);
     font-weight: 900;
-    color: #3b82f6;
+    color: #2563eb;
     margin: 0;
+    letter-spacing: -1px;
   }
   
   .subTitle {
     font-size: 18px;
-    margin-top: 12px;
+    margin-top: 10px;
     color: #6b7280;
   }
   
-  /* 우측 영역 */
+  /* 📦 우측 영역 */
   .projectRight {
-    margin-left: 30%;
-    padding: 50px;
+    margin-left: 27%;
+    padding: 20px;
     max-width: 1000px;
     background: white;
     border-radius: 20px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-    min-height: 600px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+   
+  }
+  .skillList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
   }
   
-  /* 등록 버튼 */
+  .skillBadge {
+    display: inline-block;
+    background-color: #facc15; /* 노란색 */
+    color: #1f2937;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 9999px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  }
+  
+
+  
+  /* ➕ 등록 버튼 */
   .addBtn {
-    background-color: #3b82f6;
+    background-color: #2563eb;
     color: white;
     font-weight: bold;
-    padding: 12px 28px;
+    padding: 14px 32px;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
+    font-size: 16px;
+    margin-bottom: 40px;
     cursor: pointer;
-    margin-bottom: 30px;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.1s;
   }
   
   .addBtn:hover {
-    background-color: #2563eb;
+    background-color: #1d4ed8;
+    transform: scale(1.03);
   }
   
-  /* 프로젝트 리스트 */
+  /* 🗂 프로젝트 카드 리스트 */
   .projectList {
     display: flex;
     flex-wrap: wrap;
-    gap: 24px;
+    gap: 30px;
     justify-content: center;
   }
   
+  /* 💎 프로젝트 카드 */
   .projectItem {
-    width: 45%;
-    min-height: 240px;
-    background: #f3f4f6;
-    border-radius: 16px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
-    padding: 20px 24px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: pointer;
+    width: 36%;
+    min-height: 280px;
+    background: #f1f5f9;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    padding: 24px 28px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
   }
   
   .projectItem:hover {
     transform: translateY(-6px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
   }
   
   .projectItem > p {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 22px;
+    font-weight: 700;
     color: #111827;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
   
   .projectSub p {
-    font-size: 14px;
-    margin-bottom: 4px;
+    font-size: 14.5px;
+    margin-bottom: 6px;
     color: #374151;
+    line-height: 1.6;
   }
   
-  .projSkill,
-  .projPeople,
-  .projDate,
-  .projSub {
-    line-height: 1.5;
-  }
+  .projSkill::before { content: "🧪 "; }
+  .projPeople::before { content: "👥 "; }
+  .projDate::before { content: "📅 "; }
+  .projSub::before { content: "📝 "; }
   
-  .projSkill::before {
-    content: "🧪 ";
-  }
-  .projPeople::before {
-    content: "👥 ";
-  }
-  .projDate::before {
-    content: "📅 ";
-  }
-  .projSub::before {
-    content: "📝 ";
-  }
-  
-  /* 모달 */
+  /* 🪄 등록 모달 */
   .addContainer {
     position: fixed;
     top: 50%;
     left: 50%;
     width: 600px;
-    max-width: 95%;
+    max-width: 96%;
     background: white;
     padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    border-radius: 24px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
     transform: translate(-50%, -50%);
     z-index: 1000;
+    animation: modalPop 0.4s ease;
+  }
+  
+  @keyframes modalPop {
+    from { opacity: 0; transform: translate(-50%, -55%) scale(0.96); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
   
   .addName {
@@ -152,20 +167,15 @@
     margin-bottom: 16px;
     padding: 14px;
     font-size: 16px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #cbd5e1;
     border-radius: 10px;
+    background-color: #f8fafc;
+    color: #1e293b;
     box-sizing: border-box;
-    background-color: #f9fafb;
-    color: #1f2937;
   }
   
-  .addMain {
-    height: 160px;
-  }
-  
-  .addSub {
-    height: 80px;
-  }
+  .addSub { height: 100px; }
+  .addMain { height: 180px; }
   
   .closeBtn {
     background-color: #ef4444;
@@ -184,14 +194,75 @@
     background-color: #dc2626;
   }
   
-  /* 어두운 배경 */
+  /* 🌫 모달 뒷배경 */
   .modalOverlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.55);
     z-index: 999;
+    animation: fadeOverlay 0.3s ease;
   }
   
+  @keyframes fadeOverlay {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+
+  /* 디테일모달 */
+  .detailContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    z-index: 1000;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 600px;
+
+    animation: fadeInPop 0.4s ease forwards;
+  }
+  
+  .detailTitle {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #1f2937;
+  }
+  
+  .detailSkill,
+  .detailPeople,
+  .detailDate,
+  .detailMainDesc {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #374151;
+  }
+  
+  .closeBtn {
+    background: #ef4444;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 20px;
+    cursor: pointer;
+  }
+  
+  @keyframes fadeInPop {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -45%) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  /* 디테일모달 */
