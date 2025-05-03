@@ -243,6 +243,9 @@
     font-size: 16px;
     margin-bottom: 12px;
     color: #374151;
+    white-space: pre-line;
+    max-height: 400px;
+overflow-y: auto;
   }
   
   .closeBtn {
