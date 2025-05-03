@@ -13,6 +13,7 @@ function Project() {
   //모달
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
   //모달
 
   const [selectedProject, setSelectedProject] = useState(null);
@@ -23,6 +24,11 @@ function Project() {
 
   const detailOpen = (project) => {
     setDetailModalVisible(true);
+    setSelectedProject(project);
+  };
+
+  const editOpen = (project) => {
+    setEditModalVisible(true);
     setSelectedProject(project);
   };
 
@@ -59,6 +65,15 @@ function Project() {
           project={selectedProject}
         />
       )}
+      {editModalVisible && (
+        <EditModal
+          project={selectedProject}
+          setProjects={setProjects}
+          onClose={() => {
+            setEditModalVisible(false);
+          }}
+        />
+      )}
       <div className={`${styles.projectRight} fade-right`}>
         {username && (
           <button className={styles.addBtn} onClick={addOpen}>
@@ -72,7 +87,7 @@ function Project() {
                 className={styles.projectItem}
                 key={i}
                 onClick={() => {
-                  detailOpen(project);
+                  username ? editOpen(project) : detailOpen(project);
                 }}
               >
                 <p>{project.title}</p>
@@ -194,6 +209,110 @@ function AddModal({ onClose, setProjects }) {
         className={styles.addMain}
       />
       <button onClick={addHandler} className={styles.addBtn}>
+        등록
+      </button>
+      <button onClick={onClose} className={styles.closeBtn}>
+        닫기
+      </button>
+    </div>
+  );
+}
+
+function EditModal({ project, onClose,setProjects }) {
+  const [projectTitle, setProjectTitle] = useState("");
+  const [projectMainDesc, setProjectMainDesc] = useState("");
+  const [projectSubDesc, setProjectSubDesc] = useState("");
+  const [projectSkill, setProjectSkill] = useState("");
+  const [projectPeople, setProjectPeople] = useState("");
+  const [projectDate, setProjectDate] = useState("");
+
+  useEffect(() => {
+    if (project) {
+      setProjectTitle(project.title);
+      setProjectMainDesc(project.mainDesc);
+      setProjectSubDesc(project.subDesc);
+      setProjectSkill(project.skill);
+      setProjectPeople(project.people);
+      setProjectDate(project.date);
+    }
+  }, [project]);
+
+
+  const editHandler = () => {
+    axios.put("/editProject", {
+        id: project.id,
+      title: projectTitle,
+      mainDesc: projectMainDesc,
+      subDesc: projectSubDesc,
+      skill: projectSkill,
+      people: projectPeople,
+      date: projectDate,
+    })
+    .then(()=>{
+        alert("수정 성공!");
+
+        axios.get("/projectList")
+        .then((res)=>{setProjects(res.data)})
+
+        onClose();
+    })
+    .catch((err)=>{console.log(err)})
+  };
+
+  return (
+    <div className={styles.addContainer}>
+      <p className={styles.addName}>프로젝트 수정</p>
+      <input
+        placeholder="제목 입력"
+        value={projectTitle}
+        onChange={(e) => {
+          setProjectTitle(e.target.value);
+        }}
+        className={styles.addTitle}
+      />
+      <input
+        placeholder="스킬 입력"
+        value={projectSkill}
+        onChange={(e) => {
+          setProjectSkill(e.target.value);
+        }}
+        className={styles.addSkill}
+      />
+      <input
+        placeholder="인원 입력"
+        value={projectPeople}
+        onChange={(e) => {
+          setProjectPeople(e.target.value);
+        }}
+        className={styles.addPeople}
+      />
+      <input
+        placeholder="프로젝트 기간 입력"
+        value={projectDate}
+        onChange={(e) => {
+          setProjectDate(e.target.value);
+        }}
+        className={styles.addDate}
+      />
+      <textarea
+        rows={5}
+        placeholder="간단한 프로젝트내용 입력"
+        value={projectSubDesc}
+        onChange={(e) => {
+          setProjectSubDesc(e.target.value);
+        }}
+        className={styles.addSub}
+      />
+      <textarea
+        rows={10}
+        placeholder="세부 프로젝트내용 입력"
+        value={projectMainDesc}
+        onChange={(e) => {
+          setProjectMainDesc(e.target.value);
+        }}
+        className={styles.addMain}
+      />
+      <button onClick={editHandler} className={styles.addBtn}>
         등록
       </button>
       <button onClick={onClose} className={styles.closeBtn}>
