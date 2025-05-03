@@ -78,7 +78,7 @@ function Project() {
                 <p>{project.title}</p>
                 <div className={styles.projectSub}>
                   <div className={styles.skillList}>
-                    {project.skill.split(",").map((skill, i) => (
+                    {(project.skill || "").split(",").map((skill, i) => (
                       <span key={i} className={styles.skillBadge}>
                         {skill.trim()}
                       </span>
