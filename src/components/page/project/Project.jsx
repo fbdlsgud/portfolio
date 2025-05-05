@@ -108,7 +108,7 @@ function Project() {
                 {username ? (
                   <button
                     onClick={(e) => {
-                      e.stopPropagation;
+                      e.stopPropagation();
                       projectDelete(project.id);
                     }}
                   >
