@@ -32,6 +32,20 @@ function Project() {
     setSelectedProject(project);
   };
 
+  const projectDelete = (id) => {
+    axios
+      .delete(`/projectDelete/${id}`)
+      .then((res) => {
+        console.log(res.data.id + "번 프로젝트 삭제성공");
+        alert("프로젝트 삭제 성공");
+        axios.get("/projectList").then((res)=>{setProjects(res.data)}).catch((err)=>{console.log(err); alert("불러오기 실패")})
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("프로젝트 삭제 실패!");
+      });
+  };
+
   useEffect(() => {
     axios
       .get("/projectList")
@@ -91,6 +105,18 @@ function Project() {
                 }}
               >
                 <p>{project.title}</p>
+                {username ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation;
+                      projectDelete(project.id);
+                    }}
+                  >
+                    프로젝트 삭제
+                  </button>
+                ) : (
+                  ""
+                )}
                 <div className={styles.projectSub}>
                   <div className={styles.skillList}>
                     {(project.skill || "").split(",").map((skill, i) => (
@@ -218,7 +244,7 @@ function AddModal({ onClose, setProjects }) {
   );
 }
 
-function EditModal({ project, onClose,setProjects }) {
+function EditModal({ project, onClose, setProjects }) {
   const [projectTitle, setProjectTitle] = useState("");
   const [projectMainDesc, setProjectMainDesc] = useState("");
   const [projectSubDesc, setProjectSubDesc] = useState("");
@@ -237,26 +263,29 @@ function EditModal({ project, onClose,setProjects }) {
     }
   }, []);
 
-
   const editHandler = () => {
-    axios.put("/editProject", {
+    axios
+      .put("/editProject", {
         id: project.id,
-      title: projectTitle,
-      mainDesc: projectMainDesc,
-      subDesc: projectSubDesc,
-      skill: projectSkill,
-      people: projectPeople,
-      date: projectDate,
-    })
-    .then(()=>{
+        title: projectTitle,
+        mainDesc: projectMainDesc,
+        subDesc: projectSubDesc,
+        skill: projectSkill,
+        people: projectPeople,
+        date: projectDate,
+      })
+      .then(() => {
         alert("수정 성공!");
 
-        axios.get("/projectList")
-        .then((res)=>{setProjects(res.data)})
+        axios.get("/projectList").then((res) => {
+          setProjects(res.data);
+        });
 
         onClose();
-    })
-    .catch((err)=>{console.log(err)})
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
