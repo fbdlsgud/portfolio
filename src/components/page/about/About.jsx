@@ -6,9 +6,7 @@ import { GiSkills } from "react-icons/gi";
 import axios from "../../../axios/axiosInstance";
 import { useLogin } from "../../../context/LoginContext";
 
-function About() { 
-
-  
+function About() {
   const [skills, setSkills] = useState([]);
   const [skillModal, setSkillModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
@@ -23,6 +21,23 @@ function About() {
   const skillEdit = (skill) => {
     setSelectedSkill(skill);
     setEditModal(true);
+  };
+
+  const skillDelete = (sid) => {
+    axios
+      .delete(`/skillDelete/${sid}`)
+      .then((res) => {
+        console.log(res.data.sid + "번 스킬 삭제 성공!");
+        alert("삭제 성공");
+        axios.get("/skillList").then((res) => {
+          setSkills(res.data);
+        })
+        .catch((err)=>{console.log(err); alert("불러오기 실패")})
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("삭제 실패!");
+      });
   };
 
   useEffect(() => {
@@ -103,11 +118,24 @@ function About() {
                   if (username) {
                     skillEdit(skill);
                   } else {
-                    return ;
+                    return;
                   }
                 }}
               >
                 <div className={styles.skillName}>🔧 {skill.skillName}</div>
+                {username ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      skillDelete(skill.sid);
+                    }}
+                    className={styles.skillDelete}
+                  >
+                    스킬 삭제
+                  </button>
+                ) : (
+                  ""
+                )}
                 <div className={styles.skillDesc}> {skill.skillDesc}</div>
               </div>
             ))}
