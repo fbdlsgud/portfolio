@@ -29,10 +29,15 @@ function About() {
       .then((res) => {
         console.log(res.data.sid + "번 스킬 삭제 성공!");
         alert("삭제 성공");
-        axios.get("/skillList").then((res) => {
-          setSkills(res.data);
-        })
-        .catch((err)=>{console.log(err); alert("불러오기 실패")})
+        axios
+          .get("/skillsList")
+          .then((res) => {
+            setSkills(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+            alert("불러오기 실패");
+          });
       })
       .catch((err) => {
         console.log(err);
