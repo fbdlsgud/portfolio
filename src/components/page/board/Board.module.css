@@ -76,7 +76,7 @@
 }
 
 .inputStyle {
-  width: 15%;
+  width: 19%;
   padding: 10px;
   margin: 10px;
   border-radius: 10px;
@@ -128,3 +128,76 @@
     font-size: 15px;
   }
   
+
+  /* 반응형 */
+
+  
+
+
+  @media (max-width: 767px) {
+    .boardContainer {
+      padding: 40px 20px;
+    }
+  
+    .boardLeft {
+      position: static;       /* 좌측 고정 해제 */
+      width: 100%;
+      padding: 0;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+  
+    .boardRight {
+      margin-left: 0;
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: none;
+    }
+  
+    .title {
+      font-size: 38px;
+    }
+  
+    .subTitle {
+      font-size: 16px;
+    }
+  
+    .avatarList {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+  
+    .userInfo {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  
+    .textNbtn {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+  
+    .inputStyle,
+    .textarea {
+      width: 100%;
+    }
+  
+    .submitBtn {
+      width: 100%;
+      border-radius: 10px;
+      height: 48px;
+    }
+  
+    .replyText {
+      font-size: 14px;
+    }
+  }
+  
+  /* 반응형 */

@@ -272,3 +272,68 @@ overflow-y: auto;
     }
   }
   /* 디테일모달 */
+
+
+
+
+  /* 반응형 */
+
+
+  @media (max-width: 767px) {
+    .projectContainer {
+      padding: 60px 20px;
+    }
+  
+    .projectLeft {
+      position: static;     /* ✅ 고정 해제 */
+      width: 100%;
+      padding: 0;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+  
+    .title {
+      font-size: 38px;
+    }
+  
+    .subTitle {
+      font-size: 16px;
+      color: #666;
+    }
+  
+    .projectRight {
+      margin-left: 0;       /* ✅ 좌우 배치 해제 */
+      width: 100%;
+      padding: 0;
+      border-radius: 12px;
+      box-shadow: none;
+    }
+  
+    .projectItem {
+      width: 100%;          /* ✅ 한 줄에 하나씩 */
+    }
+  
+    .addBtn {
+      width: 100%;
+      font-size: 15px;
+      padding: 12px 0;
+    }
+  
+    .projectList {
+      gap: 16px;
+    }
+  
+    .detailContainer {
+      padding: 20px;
+    }
+  
+    .detailTitle {
+      font-size: 20px;
+    }
+  
+    .detailMainDesc {
+      font-size: 14px;
+    }
+  }
+  
+  /* 반응형 */

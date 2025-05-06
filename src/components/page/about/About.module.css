@@ -202,3 +202,73 @@
     animation: fadeSlide 1.2s ease forwards;
   }
   
+
+
+  /* 반응형 */
+
+
+
+  @media (max-width: 767px) {
+    .aboutContainer {
+      padding: 30px 16px;
+    }
+  
+    .aboutIntroduceLeft {
+      position: static;     /* ✅ 왼쪽 고정 해제 */
+      width: 100%;          /* ✅ 가로 전체 차지 */
+      padding: 0;
+      margin-bottom: 20px;
+      text-align: center;   /* ✅ 중앙 정렬로 더 자연스럽게 */
+    }
+  
+    .title {
+      font-size: 36px; /* clamp는 유지되니 굳이 안 줄여도 됨 */
+    }
+  
+    .subtitle {
+      font-size: 16px;
+    }
+  
+    .aboutIntroduceRight {
+      margin-left: 0;      /* ✅ 고정 해제 */
+      width: 100%;
+      padding: 0;
+    }
+  
+    .introduce {
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .intro {
+      font-size: 17px;
+    }
+
+    .subIntro {
+      font-size: 14px;
+    }
+  
+    .skillContainer {
+      padding: 20px;
+    }
+  
+    .skillTitle {
+      font-size: 20px;
+    }
+  
+    .skillDesc {
+      font-size: 14px;
+    }
+  
+    .skillUp {
+      font-size: 14px;
+      padding: 8px 12px;
+    }
+  
+    .skillUpdateModal {
+      width: 95%;
+      padding: 20px;
+    }
+  }
+  
+  /* 반응형 */

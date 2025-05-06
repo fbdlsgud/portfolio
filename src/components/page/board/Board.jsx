@@ -114,7 +114,7 @@ function Board() {
             ))}
           </div>
           <div className={styles.userInfo}>
-            닉네임 :{" "}
+            닉네임 {" "}
             <input
               type="text"
               placeholder="닉네임을 설정해주세요!"
@@ -124,7 +124,7 @@ function Board() {
                 setUserId(e.target.value);
               }}
             />
-            비밀번호 :
+            비밀번호 
             <input
               type="password"
               placeholder="비밀번호를 설정해주세요!"

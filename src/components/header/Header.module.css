@@ -7,6 +7,7 @@
     justify-content: space-around;
     align-items: center;
     margin: 0 auto;
+    width: 100%;
 }
 
 .headerTitle {
@@ -20,7 +21,7 @@
     gap: 27px;
     font-size: 24px;
     font-weight: bold;
-    
+   
 }
 
 .link {
@@ -89,10 +90,19 @@
         width: 100%;
     }
 
+    .headerMenu {
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+      align-items: center; 
+      justify-content: center; 
+      
+    }
+
     .link,
     .loginLink,
     .loginName {
-      font-size: 23px;
+      font-size: 15px;
       padding: 6px 8px;
     }
 
