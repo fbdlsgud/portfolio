@@ -15,7 +15,7 @@
 
 .boardRight {
   margin-left: 27%;
-  height: 1000px;
+  min-height: auto;
   max-width: 1000px;
   background: #fff;
   border-radius: 20px;

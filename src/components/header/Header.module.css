@@ -1,6 +1,6 @@
 .headerContainer {
     background-color: black;
-    height: 60px;
+    height: auto;
     display: flex;
     flex-direction: row;
     padding: 10px;
@@ -37,7 +37,6 @@
     padding: 8px 12px;
     font-weight: normal;
     transition: 0.2s;
-    margin-left: 17%;
     cursor: pointer;
   }
 
@@ -70,3 +69,34 @@
     z-index: 998; /* 모달보다 아래지만 화면 위 */
   }
   
+
+  /* 반응형 */
+
+  @media (max-width: 1024px) {
+    .headerContainer {
+      flex-direction: column;
+      height: auto;
+      padding: 15px;
+    }
+  
+
+  }
+
+  @media(max-width: 767px) {
+    .headerContainer {
+      flex-direction: column;
+      height: auto;
+        width: 100%;
+    }
+
+    .link,
+    .loginLink,
+    .loginName {
+      font-size: 23px;
+      padding: 6px 8px;
+    }
+
+  }
+
+
+  /* 반응형 */
