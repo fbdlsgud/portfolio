@@ -2,7 +2,7 @@ body {
   margin: 0;
   font-family: 'font1', sans-serif;
   
-    overflow-y: scroll; /* 항상 스크롤 공간 확보 → 흔들림 방지 */
+
   
 }
 
