@@ -92,15 +92,16 @@
   
   /* 💎 프로젝트 카드 */
   .projectItem {
-    width: 36%;
-    height: 30%;
+    width: 40%;
+    height: auto; /* 고정 높이 제거 */
+  min-height: 300px; /* 적당한 최소 높이 설정 */  
     background: #f1f5f9;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     padding: 24px 28px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
     transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer;
   }
@@ -114,14 +115,15 @@
     font-size: 22px;
     font-weight: 700;
     color: #111827;
-    margin-bottom: 16px;
+    margin-bottom: 4px;
   }
+
 
 
   
   .projectSub p {
     font-size: 14.5px;
-    margin-bottom: 6px;
+    margin: 4px 0;
     color: #374151;
     line-height: 1.6;
   }

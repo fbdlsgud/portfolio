@@ -104,7 +104,7 @@ function Project() {
                   username ? editOpen(project) : detailOpen(project);
                 }}
               >
-                <p>{project.title}</p>
+                <p className={styles.proTitle}>{project.title}</p>
                 {username ? (
                   <button
                     onClick={(e) => {

@@ -35,53 +35,55 @@ function Board() {
   }, []);
 
   const replyHandler = () => {
-
-    if(!avatar.trim()) {
-        alert("아바타를 선택해주세요!");
-        return;
+    if (!avatar.trim()) {
+      alert("아바타를 선택해주세요!");
+      return;
     }
-    if(!userId.trim()) {
-        alert("닉네임을 설정해주세요!");
-        return;
+    if (!userId.trim()) {
+      alert("닉네임을 설정해주세요!");
+      return;
     }
-    if(!userPwd.trim()) {
-        alert("비밀번호를 입력해주세요!");
-        return;
+    if (!userPwd.trim()) {
+      alert("비밀번호를 입력해주세요!");
+      return;
     }
-    if(!reply.trim()) {
-        alert("댓글 내용을 입력력해주세요!");
-        return;
-    }
-
-    else {
-    axios
-      .post("/addReply", data)
-      .then((res) => {
-        console.log("댓글등록 성공!");
-        alert("소중한 댓글 감사합니다!");
-        
-        axios
-        .get("/replyList")
+    if (!reply.trim()) {
+      alert("댓글 내용을 입력력해주세요!");
+      return;
+    } else {
+      axios
+        .post("/addReply", data)
         .then((res) => {
-          setReplyInfo(res.data);
-          console.log("댓글불러오기 성공!");
+          console.log("댓글등록 성공!");
+          alert("소중한 댓글 감사합니다!");
+
+          axios
+            .get("/replyList")
+            .then((res) => {
+              setReplyInfo(res.data);
+              console.log("댓글불러오기 성공!");
+            })
+            .catch((err) => {
+              console.log(err);
+              console.log("댓글불러오기 실패!");
+            });
+
+          setAvatar("");
+          setUserId("");
+          setUserPwd("");
+          setReply("");
         })
         .catch((err) => {
           console.log(err);
-          console.log("댓글불러오기 실패!");
+          console.log("댓글등록 실패!");
         });
-
-        setAvatar("");
-        setUserId("");
-        setUserPwd("");
-        setReply("");
-      })
-      .catch((err) => {
-        console.log(err);
-        console.log("댓글등록 실패!");
-      });
     }
   };
+
+
+  const editHandler = () => {
+    alert("")
+  }
 
   return (
     <div className={styles.boardContainer}>
@@ -114,7 +116,7 @@ function Board() {
             ))}
           </div>
           <div className={styles.userInfo}>
-            닉네임 {" "}
+            닉네임{" "}
             <input
               type="text"
               placeholder="닉네임을 설정해주세요!"
@@ -124,7 +126,7 @@ function Board() {
                 setUserId(e.target.value);
               }}
             />
-            비밀번호 
+            비밀번호
             <input
               type="password"
               placeholder="비밀번호를 설정해주세요!"
@@ -151,19 +153,27 @@ function Board() {
           </div>
         </div>
         <div>
-            {
-                <div className={styles.replyList}>
-  {replyInfo.map((reply, i) => (
-    <div key={i} className={styles.replyItem}>
-      <div className={styles.replyHeader}>
-        <img src={`/avatars/${reply.avatar}`} alt="avatar" className={styles.replyAvatar} />
-        <strong>{reply.userId}</strong>
-      </div>
-      <p className={styles.replyText}>{reply.reply}</p>
-    </div>
-  ))}
-</div>
-            }
+          {
+            <div className={styles.replyList}>
+              {replyInfo.map((reply, i) => (
+                <div key={i} className={styles.replyItem}>
+                  <div className={styles.replyHeader}>
+                    <img
+                      src={`/avatars/${reply.avatar}`}
+                      alt="avatar"
+                      className={styles.replyAvatar}
+                    />
+                    <strong>{reply.userId}</strong>
+                    <div className={styles.btnGroup}>
+                      <button className={styles.editBtn}>수정</button>
+                      <button className={styles.deleteBtn}>삭제</button>
+                    </div>
+                  </div>
+                  <p className={styles.replyText}>{reply.reply}</p>
+                </div>
+              ))}
+            </div>
+          }
         </div>
       </div>
     </div>
