@@ -349,6 +349,50 @@
   .emoji {
     font-size: 22px;
   }
+
+
+  .mainRight {
+    padding-left: 0;
+    gap: 24px;
+  }
+
+  .visitorBox {
+    font-size: 13px;
+    padding: 8px 12px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .infoCard {
+    padding: 16px;
+    box-shadow: none;
+    background-color: #f9f9f9;
+  }
+
+  .projectList,
+  .replyList {
+    gap: 10px;
+  }
+
+  .projectItem,
+  .replyItem {
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+  }
+
+  .replyAvatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .replyName {
+    font-size: 13px;
+  }
+
+  .replyText {
+    font-size: 13px;
+  }
 }
 
 
