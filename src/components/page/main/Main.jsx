@@ -11,19 +11,23 @@ function Main() {
   const [reply, setReply] = useState([]);
 
   useEffect(() => {
+    // ✅ 오늘/전체 방문자 수는 항상 가져와야 함
+    axios.get("/visitCount")
+      .then((res) => {
+        setToday(res.data.today);
+        setTotal(res.data.total);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+  
+  useEffect(() => {
+    // ✅ 방문자 수 증가는 세션 기준으로 한 번만
     const visited = sessionStorage.getItem("visited");
-
     if (!visited) {
-      axios
-        .get("/visit")
-        .then((res) => {
-          setToday(res.data.today);
-          setTotal(res.data.total);
-        })
-        .catch((err) => {
-          console.log(err);
+      axios.get("/visit") // 이건 단순 증가만 수행 (count++ 저장)
+        .then(() => {
+          sessionStorage.setItem("visited", "true");
         });
-      sessionStorage.setItem("visited", "true");
     }
   }, []);
 
