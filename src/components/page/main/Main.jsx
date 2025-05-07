@@ -12,7 +12,7 @@ function Main() {
 
   useEffect(() => {
     // ✅ 오늘/전체 방문자 수는 항상 가져와야 함
-    axios.get("/visitCount")
+    axios.get("/visit")
       .then((res) => {
         setToday(res.data.today);
         setTotal(res.data.total);
