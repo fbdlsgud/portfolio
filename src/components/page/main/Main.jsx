@@ -4,9 +4,28 @@ import { useEffect, useState } from "react";
 import axios from "../../../axios/axiosInstance";
 
 function Main() {
-  const [visit, setVisit] = useState([]);
+  const [today, setToday] = useState(0);
+  const [total, setTotal] = useState(0);
+
   const [project, setProject] = useState([]);
   const [reply, setReply] = useState([]);
+
+  useEffect(() => {
+    const visited = sessionStorage.getItem("visited");
+
+    if (!visited) {
+      axios
+        .get("/visit")
+        .then((res) => {
+          setToday(res.data.today);
+          setTotal(res.data.total);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      sessionStorage.setItem("visited", "true");
+    }
+  }, []);
 
   useEffect(() => {
     axios
@@ -44,18 +63,18 @@ function Main() {
           </p>
         </div>
 
-        <div className={styles.subMenubar}>
-          <Link to={"/about"} className={styles.subMenu}>
-            <span className={styles.emoji}>👨🏻‍🔧</span>
-            <span className={styles.text}>About me</span>
+        <div className={styles.glassMenuBar}>
+          <Link to="/about" className={styles.glassCard}>
+            <span className={styles.glassIcon}>👨🏻‍🔧</span>
+            <span className={styles.glassText}>About me</span>
           </Link>
-          <Link to={"/project"} className={styles.subMenu}>
-            <span className={styles.emoji}>💻</span>
-            <span className={styles.text}>Project</span>
+          <Link to="/project" className={styles.glassCard}>
+            <span className={styles.glassIcon}>💻</span>
+            <span className={styles.glassText}>Project</span>
           </Link>
-          <Link to={"/board"} className={styles.subMenu}>
-            <span className={styles.emoji}>👨🏻</span>
-            <span className={styles.text}>Guest Board</span>
+          <Link to="/board" className={styles.glassCard}>
+            <span className={styles.glassIcon}>📜</span>
+            <span className={styles.glassText}>Guest Board</span>
           </Link>
         </div>
       </div>
@@ -63,43 +82,43 @@ function Main() {
       <div className={styles.mainRight}>
         {/* 👁️ 방문자 수 */}
         <div className={styles.visitorBox}>
-          <span>👁️</span> Today <strong>14</strong> / Total{" "}
-          <strong>1,234</strong>
+          <span>👁️</span> Today <strong>{today}</strong> / Total{" "}
+          <strong>{total}</strong>
         </div>
 
         {/* 💻 최신 프로젝트 */}
         <div className={styles.infoCard}>
           <h3>💻 최신 프로젝트</h3>
-          <Link to="/project" style={{textDecoration:"none"}}>
-          <ul className={styles.projectList}>
-            {project.map((p, i) => (
-              <li key={i} className={styles.projectItem}>
-                <div className={styles.projectText}>
-                  <strong className={styles.projectTitle}>{p.title}</strong>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <Link to="/project" style={{ textDecoration: "none" }}>
+            <ul className={styles.projectList}>
+              {project.map((p, i) => (
+                <li key={i} className={styles.projectItem}>
+                  <div className={styles.projectText}>
+                    <strong className={styles.projectTitle}>{p.title}</strong>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </Link>
         </div>
 
         {/* 💬 최신 댓글 */}
         <div className={styles.infoCard}>
           <h3>💬 최신 댓글</h3>
-          <Link to="/board" style={{textDecoration:"none"}}>
-          <ul className={styles.replyList}>
-            {reply.map((r, i) => (
-              <li key={i} className={styles.replyItem}>
-                <img
-                  src={`/avatars/${r.avatar}`}
-                  alt="avatar"
-                  className={styles.replyAvatar}
-                />
-                <strong className={styles.replyName}>{r.userId}</strong>
-                <span className={styles.replyText}> {r.reply}</span>
-              </li> 
-            ))}
-          </ul>
+          <Link to="/board" style={{ textDecoration: "none" }}>
+            <ul className={styles.replyList}>
+              {reply.map((r, i) => (
+                <li key={i} className={styles.replyItem}>
+                  <img
+                    src={`/avatars/${r.avatar}`}
+                    alt="avatar"
+                    className={styles.replyAvatar}
+                  />
+                  <strong className={styles.replyName}>{r.userId}</strong>
+                  <span className={styles.replyText}> {r.reply}</span>
+                </li>
+              ))}
+            </ul>
           </Link>
         </div>
       </div>

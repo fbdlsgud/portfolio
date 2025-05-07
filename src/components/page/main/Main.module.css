@@ -3,7 +3,46 @@
     /* margin-left: 150px;
     margin-top: 200px; */
     width: 100%;
+}
+.glassMenuBar {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 40px;
+}
 
+.glassCard {
+  width: 140px;
+  height: 140px;
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06); 
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.glassCard:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.glassIcon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.glassText {
+  font-size: 16px;
+  font-weight: bold;
+  color: black;
 }
 
 .mainContainer {

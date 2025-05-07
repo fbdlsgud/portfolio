@@ -3,7 +3,7 @@
     width: 100%;
     min-height: 100vh;
     padding: 100px 5%;
-    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    background: transparent; 
     font-family: 'Segoe UI', 'Pretendard', sans-serif;
     color: #1f2937;
     box-sizing: border-box;

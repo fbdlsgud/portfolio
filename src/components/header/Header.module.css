@@ -1,5 +1,5 @@
 .headerContainer {
-    background-color: black;
+  background: linear-gradient(135deg, #1a1a1a, #333333);
     height: auto;
     display: flex;
     flex-direction: row;
@@ -26,7 +26,7 @@
 
 .link {
     text-decoration: none;
-    color: white;
+    color: #cccccc;
     padding: 8px 12px;
     font-weight: normal;
     transition: 0.2s;

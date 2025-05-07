@@ -1,7 +1,7 @@
 .contactContainer {
     width: 100%;
     padding: 60px 5%;
-    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    background: transparent; 
     font-family: 'Segoe UI', sans-serif;
     color: #333;
 }
