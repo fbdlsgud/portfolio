@@ -76,10 +76,10 @@ function About() {
                 alert("이메일 복사 완료");
               }}
             >
-              ✉️ 이메일 fbdlsgud9500@naver.com
+              ✉️ fbdlsgud9500@naver.com
             </div>
             <div className={styles.contactRow}>
-              🐙 GitHub  {" "}
+              🐙   {" "}
               <a
                 href="https://github.com/fbdlsgud"
                 target="_blank"
