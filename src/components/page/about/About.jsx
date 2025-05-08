@@ -46,9 +46,8 @@ function About() {
   };
 
   useEffect(() => {
-    console.log("🔍 API 주소asdsadsazzzz:", process.env.REACT_APP_API_URL);
     axios.get("/skillsList").then((res) => {
-      console.log("💥 skills 응답:", res.data);
+ 
       setSkills(res.data);
     });
   }, []);
@@ -58,6 +57,39 @@ function About() {
       <div className={`${styles.aboutIntroduceLeft} fade-in`}>
         <p className={styles.title}>About</p>
         <p className={styles.subtitle}>저에 대해 소개해드릴게요!</p>
+        <div className={styles.profileCard}>
+          <img
+            src="/my/profile.jpg"
+            alt="프로필 사진"
+            className={styles.profileImage}
+          />
+          <h2 className={styles.profileName}>류인형</h2>
+          <p className={styles.profileRole}>Full-Stack Developer</p>
+
+          <div className={styles.contactList}>
+            <div className={styles.contactRow}>📱 TELL : 010-5513-9692</div>
+            <div className={styles.contactRow}>💬 KAKAO : ryu9692</div>
+            <div
+              className={`${styles.contactRow} ${styles.copyable}`}
+              onClick={() => {
+                navigator.clipboard.writeText("fbdlsgud9500@naver.com");
+                alert("이메일 복사 완료");
+              }}
+            >
+              ✉️ 이메일 fbdlsgud9500@naver.com
+            </div>
+            <div className={styles.contactRow}>
+              🐙 GitHub  {" "}
+              <a
+                href="https://github.com/fbdlsgud"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                github.com/fbdlsgud
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className={`${styles.aboutIntroduceRight} fade-right`}>
@@ -73,10 +105,12 @@ function About() {
           <p className={styles.subIntro}>
             저는 단순히 동작하는 기능을 만드는 개발자가 되기보다, 사용자가 어떤
             흐름으로 움직이고, <br />
-            무엇을 느낄지를 먼저 고민하는 개발자가 되고 싶습니다. <br /><br />
+            무엇을 느낄지를 먼저 고민하는 개발자가 되고 싶습니다. <br />
+            <br />
             눈에 보이지 않는 작은 불편 하나도 놓치지 않고, 한 줄의 코드가
             사용자에게 더 나은 경험을 줄 수 있도록 <br />
-            고민하며 개발합니다.<br />
+            고민하며 개발합니다.
+            <br />
             <br />
             저에게 '개발자' 란 기술을 통해 문제를 해결하는 사람이라 생각합니다.
             <br /> 저는 그 문제의 중심을 언제나 사용자 입장에서 바라보며, 더

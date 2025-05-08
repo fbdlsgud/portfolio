@@ -17,6 +17,12 @@ function Board() {
   const [userPwd, setUserPwd] = useState("");
   const [reply, setReply] = useState("");
 
+    // 어떤 댓글(index)의 입력창이 열려 있는지
+    const [openPwdIndex, setOpenPwdIndex] = useState(null);
+
+    // 댓글마다 입력한 비밀번호 저장
+    const [pwdInputs, setPwdInputs] = useState({});
+
   const [replyInfo, setReplyInfo] = useState([]);
 
   const data = { avatar, userId, userPwd, reply };
@@ -80,10 +86,23 @@ function Board() {
     }
   };
 
+  const deleteReply = (rid, inputPwd) => {
+    axios
+      .post("/deleteReply", { rid, userPwd: inputPwd })
+      .then((res) => {
+        alert("삭제 성공!");
+        return axios.get("/replyList");
+      })
+      .then((res) => {
+        setReplyInfo(res.data); 
+        setOpenPwdIndex(null);  
+      })
+      .catch((err) => {
+        console.log("삭제 실패", err);
+        alert("비밀번호가 일치하지 않습니다.");
+      });
+  };
 
-  const editHandler = () => {
-    alert("")
-  }
 
   return (
     <div className={styles.boardContainer}>
@@ -155,24 +174,52 @@ function Board() {
         <div>
           {
             <div className={styles.replyList}>
-              {replyInfo.map((reply, i) => (
-                <div key={i} className={styles.replyItem}>
-                  <div className={styles.replyHeader}>
-                    <img
-                      src={`/avatars/${reply.avatar}`}
-                      alt="avatar"
-                      className={styles.replyAvatar}
-                    />
-                    <strong>{reply.userId}</strong>
-                    <div className={styles.btnGroup}>
-                      <button className={styles.editBtn}>수정</button>
-                      <button className={styles.deleteBtn}>삭제</button>
-                    </div>
-                  </div>
-                  <p className={styles.replyText}>{reply.reply}</p>
+            {replyInfo.map((reply, i) => (
+              <div key={i} className={styles.replyItem}>
+                <div className={styles.replyHeader}>
+                  <img
+                    src={`/avatars/${reply.avatar}`}
+                    alt="avatar"
+                    className={styles.replyAvatar}
+                  />
+                  <strong>{reply.userId}</strong>
+      
+                  <button
+                    className={styles.deleteIconBtn}
+                    onClick={() =>
+                      setOpenPwdIndex(openPwdIndex === i ? null : i)
+                    }
+                  >
+                    🗑️
+                  </button>
                 </div>
-              ))}
-            </div>
+      
+                <p className={styles.replyText}>{reply.reply}</p>
+      
+                {openPwdIndex === i && (
+                  <div className={styles.pwdBox}>
+                    <input
+                      type="password"
+                      placeholder="비밀번호 입력"
+                      className={styles.pwdInput}
+                      value={pwdInputs[i] || ""}
+                      onChange={(e) =>
+                        setPwdInputs({ ...pwdInputs, [i]: e.target.value })
+                      }
+                    />
+                    <button
+                      className={styles.pwdSubmitBtn}
+                      onClick={() => {
+                        deleteReply(reply.rid, pwdInputs[i]);
+                      }}
+                    >
+                      삭제하기
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
           }
         </div>
       </div>

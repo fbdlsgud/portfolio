@@ -27,7 +27,75 @@
     font-size: 20px;
     margin-top: 10px;
     color: #666;
+    margin-bottom: 50px;
   }
+  .profileCard {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    text-align: center;
+    width: 100%;
+    max-width: 280px;
+    margin-top: 40px;
+  }
+  
+  .profileImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    
+  }
+  
+  .profileName {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin: 8px 0;
+  }
+  
+  .profileRole {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 16px;
+  }
+  
+  .contactList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    color: #444;
+    text-align: left;
+  }
+  
+  .contactRow {
+    background: #f1f3f5;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: background 0.2s;
+  }
+  
+  .contactRow:hover {
+    background: #e6f0ff;
+  }
+  
+  .copyable {
+    cursor: pointer;
+  }
+  
+  .contactRow a {
+    color: #3a86ff;
+    text-decoration: none;
+  }
+  
+  .contactRow a:hover {
+    text-decoration: underline;
+  }
+  
   
   /* 우측 내용 */
   .aboutIntroduceRight {
@@ -229,7 +297,19 @@
     .subtitle {
       font-size: 16px;
     }
+    .contactMini {
+      font-size: 13px;
+      padding: 12px;
+    }
   
+    .contactItem {
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+  
+    .contactIcon {
+      font-size: 15px;
+    }
     .aboutIntroduceRight {
       margin-left: 0;      /* ✅ 고정 해제 */
       width: 100%;
@@ -271,5 +351,7 @@
       padding: 20px;
     }
   }
-  
+  .profileCard {
+    margin: 0 auto 20px auto;
+  }
   /* 반응형 */

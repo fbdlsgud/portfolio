@@ -32,7 +32,6 @@ function Header(){
         <Link to="/about" className={`${styles.link} ${location.pathname === "/about" ? styles.active : ""}`}>About</Link>
         <Link to="/project" className={`${styles.link} ${location.pathname === "/project" ? styles.active : ""}`}>Project</Link>
         <Link to="/board" className={`${styles.link} ${location.pathname === "/board" ? styles.active : ""}`}>Board</Link>
-        <Link to="/contact" className={`${styles.link} ${location.pathname === "/contact" ? styles.active : ""}`}>Contact</Link>
         {username?
         <div className={styles.loginName} onClick={logoutHandler}>{username} 관리자님</div>
         :
