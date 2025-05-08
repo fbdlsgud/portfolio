@@ -67,7 +67,7 @@ function About() {
           <p className={styles.profileRole}>Full-Stack Developer</p>
 
           <div className={styles.contactList}>
-            <div className={styles.contactRow}>📱 TELL : 010-5513-9692</div>
+            <div className={styles.contactRow}>📱 TEL : 010-5513-9692</div>
             <div className={styles.contactRow}>💬 KAKAO : ryu9692</div>
             <div
               className={`${styles.contactRow} ${styles.copyable}`}
