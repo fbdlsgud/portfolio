@@ -32,11 +32,9 @@ function Board() {
       .get("/replyList")
       .then((res) => {
         setReplyInfo(res.data);
-        console.log("댓글불러오기 성공!");
       })
       .catch((err) => {
         console.log(err);
-        console.log("댓글불러오기 실패!");
       });
   }, []);
 
@@ -54,24 +52,21 @@ function Board() {
       return;
     }
     if (!reply.trim()) {
-      alert("댓글 내용을 입력력해주세요!");
+      alert("댓글 내용을 입력해주세요!");
       return;
     } else {
       axios
         .post("/addReply", data)
         .then((res) => {
-          console.log("댓글등록 성공!");
           alert("소중한 댓글 감사합니다!");
 
           axios
             .get("/replyList")
             .then((res) => {
               setReplyInfo(res.data);
-              console.log("댓글불러오기 성공!");
             })
             .catch((err) => {
               console.log(err);
-              console.log("댓글불러오기 실패!");
             });
 
           setAvatar("");
@@ -81,7 +76,6 @@ function Board() {
         })
         .catch((err) => {
           console.log(err);
-          console.log("댓글등록 실패!");
         });
     }
   };
