@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import styles from "./Board.module.css";
 import axios from "../../../axios/axiosInstance";
+import { useLogin } from "../../../context/LoginContext";
 
 function Board() {
   const avatars = [
@@ -11,6 +12,8 @@ function Board() {
     "avatar5.png",
     "avatar6.png",
   ];
+
+  const username = useLogin();
 
   const [avatar, setAvatar] = useState("");
   const [userId, setUserId] = useState("");
@@ -97,6 +100,20 @@ function Board() {
       });
   };
 
+  const deleteAllHandler = () => {
+
+    if(!window.confirm("댓글 전체 삭제할까요?")) return;
+
+    axios
+      .post("/deleteAll")
+      .then(()=>{
+        alert("전체 삭제 완료");
+
+        axios.get("replyList").then((res)=>setReplyInfo(res.data));
+      })
+      .catch((err)=>{console.error("삭제 실패", err); alert("삭제 중 오류가 발생했습니다.")});
+  }
+
 
   return (
     <div className={styles.boardContainer}>
@@ -163,6 +180,9 @@ function Board() {
             <button className={styles.submitBtn} onClick={replyHandler}>
               작성
             </button>
+            {username && (
+              <button onClick={deleteAllHandler}>댓글 전체 삭제</button>
+            )}
           </div>
         </div>
         <div>
