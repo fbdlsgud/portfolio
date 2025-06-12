@@ -13,7 +13,7 @@ function Board() {
     "avatar6.png",
   ];
 
-  const username = useLogin();
+  const {username} = useLogin();
 
   const [avatar, setAvatar] = useState("");
   const [userId, setUserId] = useState("");
@@ -180,9 +180,9 @@ function Board() {
             <button className={styles.submitBtn} onClick={replyHandler}>
               작성
             </button>
-            {username && (
+            {username ? (
               <button onClick={deleteAllHandler}>댓글 전체 삭제</button>
-            )}
+            ) : ""}
           </div>
         </div>
         <div>
