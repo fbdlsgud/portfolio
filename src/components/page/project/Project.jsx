@@ -261,7 +261,7 @@ function EditModal({ project, onClose, setProjects }) {
       setProjectPeople(project.people);
       setProjectDate(project.date);
     }
-  }, []);
+  }, [project]);
 
   const editHandler = () => {
     axios

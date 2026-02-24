@@ -94,7 +94,6 @@ export function getTotalGames() {
  * 통계 조회
  */
 export function getGameStats() {
-  const records = getGameRecords();
   const best = getBestScore();
   const avg = getAverageScore();
   const total = getTotalGames();
