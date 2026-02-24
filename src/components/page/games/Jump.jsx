@@ -168,7 +168,7 @@ export default function ElizabethGame() {
   useEffect(() => {
     const updateSize = () => {
       const w = Math.min(window.innerWidth, 430);
-      const h = window.innerHeight;
+      const h = Math.min(window.innerHeight, 700);
       setCanvasSize({ w, h });
       canvasSizeRef.current = { w, h };
     };
@@ -498,10 +498,22 @@ export default function ElizabethGame() {
     return () => cancelAnimationFrame(rafRef.current);
   }, [canvasSize, spawnScoreParticle, spawnDeathParticles, spawnMilestoneParticles, handleDeath]);
 
+  const handleRestart = useCallback(() => {
+    initGame();
+    stateRef.current = 'idle';
+    setGameState('idle');
+    const gameRecords = getGameRecords();
+    setRecords(gameRecords);
+  }, [initGame]);
+
   const handleInput = useCallback((e) => {
     e?.preventDefault();
     const state = stateRef.current;
-    if (state === 'gameover') return;
+    
+    if (state === 'gameover') {
+      handleRestart();
+      return;
+    }
 
     getAudioCtx();
 
@@ -520,15 +532,7 @@ export default function ElizabethGame() {
       wingTimerRef.current = 10;
       playJumpSound();
     }
-  }, [initGame]);
-
-  const handleRestart = useCallback(() => {
-    initGame();
-    stateRef.current = 'idle';
-    setGameState('idle');
-    const gameRecords = getGameRecords();
-    setRecords(gameRecords);
-  }, [initGame]);
+  }, [initGame, handleRestart]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
