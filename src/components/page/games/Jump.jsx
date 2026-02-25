@@ -13,6 +13,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getBestScore, getLeaderboard, saveLeaderboardRecord } from './scoreManager';
 
+import flyImgSrc from '../../../assets/games/jump/elizabeth-fly.png';
+import deadImgSrc from '../../../assets/games/jump/elizabeth-dead.png';
+import bgImgSrc from '../../../assets/games/jump/game-bg.png';
+import bgNoonSrc from '../../../assets/games/jump/bg-noon.png';
+import bgEveningSrc from '../../../assets/games/jump/bg-evening.png';
+import bgNightSrc from '../../../assets/games/jump/bg-night.png';
+
 // ─── 게임 상수 ───────────────────────────────────────────────────────────────
 const GRAVITY = 0.42;
 const JUMP_FORCE = -9.2;
@@ -27,10 +34,7 @@ const BIRD_X_RATIO = 0.22;
 const BIRD_SIZE = 50;
 const GROUND_HEIGHT = 75;
 
-// 이미지 CDN URL
-const ELIZABETH_FLY_URL = "https://private-us-east-1.manuscdn.com/sessionFile/gLQcJ7Ge7mIjlAuyq4G1HA/sandbox/URUFcwXIon0ve47BUXUSpV_1771926725631_na1fn_ZWxpemFiZXRoLWZseQ.png?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvZ0xRY0o3R2U3bUlqbEF1eXE0RzFIQS9zYW5kYm94L1VSVUZjd1hJb24wdmU0N0JVWFVTcFZfMTc3MTkyNjcyNTYzMV9uYTFmbl9aV3hwZW1GaVpYUm9MV1pzZVEucG5nP3gtb3NzLXByb2Nlc3M9aW1hZ2UvcmVzaXplLHdfMTkyMCxoXzE5MjAvZm9ybWF0LHdlYnAvcXVhbGl0eSxxXzgwIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzk4NzYxNjAwfX19XX0_&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=gPqdpji1f2MwRVL-7jkSb~HWXvTPPsvgSTKxWVeQRsLP5EIJnkJYifMKHYDAlAL98SBEfb1ojQMF1TVW39kdBBV6yc5Wok-pJR9JDtVNVLnX3fsdnNhmM8mSqmcJiuWR-2zbVtLViOSj0WKn29tXduzOf1vo~qUlSaC6~~Xb17PE0w0zYIQ79t7H06auqDRsJFhMGg28vKnjL~9gTG82Cih5MSR2KmpXJlhAnaylXdrEFdMLDuLlZESIkOLN~nQCNPKxbzUaKel8rYUXrNOxHCtvGhYEr-4Ea8movaGYdMh7kfkMQK5MIJ36OUIr~zjIeHGYChv5sASQxINvHbMo8A__";
-const ELIZABETH_DEAD_URL = "https://private-us-east-1.manuscdn.com/sessionFile/gLQcJ7Ge7mIjlAuyq4G1HA/sandbox/URUFcwXIon0ve47BUXUSpV_1771926725632_na1fn_ZWxpemFiZXRoLWRlYWQ.png?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvZ0xRY0o3R2U3bUlqbEF1eXE0RzFIQS9zYW5kYm94L1VSVUZjd1hJb24wdmU0N0JVWFVTcFZfMTc3MTkyNjcyNTYzMl9uYTFmbl9aV3hwZW1GaVpYUm9MV1JsWVdRLnBuZz94LW9zcy1wcm9jZXNzPWltYWdlL3Jlc2l6ZSx3XzE5MjAsaF8xOTIwL2Zvcm1hdCx3ZWJwL3F1YWxpdHkscV84MCIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc5ODc2MTYwMH19fV19&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=PephdrUGCdpqhMo-gdLqFJqtmyXfltJMITXXfXQQ6uAMniaRNHYqQq2AJpuWgruPMtjS8XBS0WrpV3QpkJPW5MybbStQwyaCcAaqeiH0M7XFlEgL-ki1B9pdJIZjNXoIJ2iPFUb~hQCq0BWC3soqUNZsUpnwKJB~5fFSzQl1xUl9QNNvS7UMWLXOe5hrB4uVT1EFvysHj7jQvZVI0KTxAFWaXTjCP82tfrIuz7jxNUYgMjpcwrtpHlheOxIs0wHd0p955ZG-0cZ6fmfEeec1WYY4RXTBECAcayzXsJv6zmcUaThn~EvSbxJRli1JyzAS5ooE~sQBGo7OGqdT~fwE0Q__";
-const BG_URL = "https://private-us-east-1.manuscdn.com/sessionFile/gLQcJ7Ge7mIjlAuyq4G1HA/sandbox/URUFcwXIon0ve47BUXUSpV-img-3_1771926722000_na1fn_Z2FtZS1iZw.png?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvZ0xRY0o3R2U3bUlqbEF1eXE0RzFIQS9zYW5kYm94L1VSVUZjd1hJb24wdmU0N0JVWFVTcFYtaW1nLTNfMTc3MTkyNjcyMjAwMF9uYTFmbl9aMkZ0WlMxaVp3LnBuZz94LW9zcy1wcm9jZXNzPWltYWdlL3Jlc2l6ZSx3XzE5MjAsaF8xOTIwL2Zvcm1hdCx3ZWJwL3F1YWxpdHkscV84MCIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc5ODc2MTYwMH19fV19&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=O4B5KL8mgM4RMkfrCTqdBOVDUlR8TC-RMDYUFjeu-h9q7gvDDdZnpjM9dSma1ddDddbXhaY-oKYoVG~swB5HrQAHAz9j0OAM8vMmi2VmDz7h5ynjVLHBHF0CSGCBLe2yaTnlUfx2wMe8-15Y~MlG4qBcr80pjIVS1PjoHsfHqToQXwrKDSPY9VFPWQIAAPXNyAwtXWZ~RyFr9zSKsBzKaSb8KzkJ5Se0ZWW6ojKyAWkKUn24sBMLfqzmJBvLorVRlW5iySUNdi6qzEL9yY8CbDqae8IFy9rdNshDu6yWbVhcfVq3CJbsi-LVKEHnBE3DjTs9UEKYun6lkyVHB-WCmw__";
+// ─── 게임 상수 ───────────────────────────────────────────────────────────────
 
 let globalAudioCtx = null;
 
@@ -127,15 +131,29 @@ function playMilestoneSound() {
 
 const flyImg = new Image();
 flyImg.crossOrigin = 'anonymous';
-flyImg.src = ELIZABETH_FLY_URL;
+flyImg.src = flyImgSrc;
 
 const deadImg = new Image();
 deadImg.crossOrigin = 'anonymous';
-deadImg.src = ELIZABETH_DEAD_URL;
+deadImg.src = deadImgSrc;
 
 const bgImg = new Image();
 bgImg.crossOrigin = 'anonymous';
-bgImg.src = BG_URL;
+bgImg.src = bgImgSrc;
+
+const bgNoon = new Image();
+bgNoon.crossOrigin = 'anonymous';
+bgNoon.src = bgNoonSrc;
+
+const bgEvening = new Image();
+bgEvening.crossOrigin = 'anonymous';
+bgEvening.src = bgEveningSrc;
+
+const bgNight = new Image();
+bgNight.crossOrigin = 'anonymous';
+bgNight.src = bgNightSrc;
+
+const bgImages = [bgImg, bgNoon, bgEvening, bgNight];
 
 export default function ElizabethGame() {
   const canvasRef = useRef(null);
@@ -445,14 +463,27 @@ export default function ElizabethGame() {
       ctx.save();
       ctx.translate(shakeX, shakeY);
 
-      if (bgImg.complete && bgImg.naturalWidth > 0) {
-        ctx.drawImage(bgImg, 0, 0, w, h);
+      const bgIdx = Math.floor(scoreRef.current / 10) % bgImages.length;
+      const currentBg = bgImages[bgIdx];
+
+      if (currentBg.complete && currentBg.naturalWidth > 0) {
+        ctx.drawImage(currentBg, 0, 0, w, h);
       } else {
         const grad = ctx.createLinearGradient(0, 0, 0, h);
-        grad.addColorStop(0, '#5BB8F5');
-        grad.addColorStop(0.6, '#A8D8EA');
-        grad.addColorStop(0.85, '#C8F0A0');
-        grad.addColorStop(1, '#8BC34A');
+        // 점수대에 따라 폴백 그라데이션 색상도 변경
+        if (bgIdx === 0) { // 아침
+          grad.addColorStop(0, '#5BB8F5');
+          grad.addColorStop(1, '#8BC34A');
+        } else if (bgIdx === 1) { // 낮
+          grad.addColorStop(0, '#4FACFE');
+          grad.addColorStop(1, '#00F2FE');
+        } else if (bgIdx === 2) { // 저녁
+          grad.addColorStop(0, '#FF8C00');
+          grad.addColorStop(1, '#FF4500');
+        } else { // 밤
+          grad.addColorStop(0, '#2C3E50');
+          grad.addColorStop(1, '#000000');
+        }
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, w, h);
       }
@@ -913,8 +944,6 @@ function StartScreen({ onStart, bestScore, onShowRecords, leaderboard, showRecor
         justifyContent: 'center',
         pointerEvents: 'all',
       }}
-      onClick={onStart}
-      onTouchStart={(e) => { e.preventDefault(); onStart(); }}
     >
       <div
         style={{
@@ -928,6 +957,8 @@ function StartScreen({ onStart, bestScore, onShowRecords, leaderboard, showRecor
           width: '82%',
           animation: 'bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
         }}
+        onClick={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
       >
         <div style={{
           fontFamily: '"Press Start 2P", monospace',
@@ -964,7 +995,7 @@ function StartScreen({ onStart, bestScore, onShowRecords, leaderboard, showRecor
           animation: 'float 2s ease-in-out infinite',
         }}>
           <img
-            src={ELIZABETH_FLY_URL}
+            src={flyImgSrc}
             alt="Elizabeth"
             style={{ width: 90, height: 90, objectFit: 'contain' }}
             onError={(e) => { e.target.style.display = 'none'; }}
@@ -1031,16 +1062,25 @@ function StartScreen({ onStart, bestScore, onShowRecords, leaderboard, showRecor
           </div>
         )}
 
-        <div style={{
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: 10,
-          color: '#1b5e20',
-          opacity: blink ? 1 : 0.2,
-          transition: 'opacity 0.1s',
-          marginTop: 6,
-        }}>
+        <button
+          onClick={onStart}
+          onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); onStart(); }}
+          style={{
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: 10,
+            color: '#1b5e20',
+            opacity: blink ? 1 : 0.2,
+            transition: 'opacity 0.15s',
+            marginTop: 6,
+            background: 'none',
+            border: '2px solid #1b5e20',
+            borderRadius: 8,
+            padding: '10px 20px',
+            cursor: 'pointer',
+          }}
+        >
           ▶ TAP TO START
-        </div>
+        </button>
       </div>
 
       {showRecords && (
@@ -1059,6 +1099,7 @@ function StartScreen({ onStart, bestScore, onShowRecords, leaderboard, showRecor
         >
           <div
             style={{
+              position: 'relative',
               background: 'rgba(255,255,255,0.95)',
               border: '4px solid #1b5e20',
               borderRadius: 14,
@@ -1071,6 +1112,24 @@ function StartScreen({ onStart, bestScore, onShowRecords, leaderboard, showRecor
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
           >
+            <button
+              onClick={onCloseRecords}
+              onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); onCloseRecords(); }}
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                background: 'none',
+                border: 'none',
+                fontSize: 20,
+                color: '#888',
+                cursor: 'pointer',
+                padding: '4px 8px',
+                lineHeight: 1,
+              }}
+            >
+              ✕
+            </button>
             <div style={{
               fontFamily: '"Press Start 2P", monospace',
               fontSize: 12,
@@ -1118,24 +1177,7 @@ function StartScreen({ onStart, bestScore, onShowRecords, leaderboard, showRecor
               </div>
             )}
 
-            <button
-              onClick={onCloseRecords}
-              onTouchStart={(e) => { e.preventDefault(); onCloseRecords(); }}
-              style={{
-                width: '100%',
-                marginTop: 14,
-                padding: '10px',
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: 10,
-                background: '#2E7D32',
-                color: '#FFF',
-                border: '2px solid #1b5e20',
-                borderRadius: 6,
-                cursor: 'pointer',
-              }}
-            >
-              닫기
-            </button>
+
           </div>
         </div>
       )}
@@ -1146,11 +1188,31 @@ function StartScreen({ onStart, bestScore, onShowRecords, leaderboard, showRecor
 function GameOverScreen({ score, bestScore, onRestart }) {
   const isNewBest = score > 0 && score === bestScore;
   const [show, setShow] = useState(false);
+  const [showTip, setShowTip] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setShow(true), 100);
     return () => clearTimeout(t);
   }, []);
+
+  const handleCopy = async (e) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText('3333-06-8147746');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = '3333-06-8147746';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   if (!show) return null;
 
@@ -1192,7 +1254,7 @@ function GameOverScreen({ score, bestScore, onRestart }) {
 
         <div style={{ marginBottom: 14 }}>
           <img
-            src={ELIZABETH_DEAD_URL}
+            src={deadImgSrc}
             alt="Elizabeth Dead"
             style={{ width: 82, height: 82, objectFit: 'contain' }}
             onError={(e) => { e.target.style.display = 'none'; }}
@@ -1234,6 +1296,83 @@ function GameOverScreen({ score, bestScore, onRestart }) {
         }}>
           {isNewBest ? '🏆 NEW BEST!' : `BEST: ${bestScore}`}
         </div>
+
+        {!showTip ? (
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowTip(true); }}
+            onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); setShowTip(true); }}
+            style={{
+              display: 'block',
+              width: '100%',
+              background: '#FFF8E1',
+              color: '#F57F17',
+              fontFamily: '"Noto Sans KR", sans-serif',
+              fontSize: 12,
+              fontWeight: 700,
+              padding: '10px 20px',
+              border: '2px solid #FFD54F',
+              borderRadius: 10,
+              cursor: 'pointer',
+              marginBottom: 10,
+              transition: 'transform 0.1s',
+            }}
+          >
+            🍯 개발자 꿀팁 보기
+          </button>
+        ) : (
+          <div
+            style={{
+              background: '#FFF8E1',
+              border: '2px solid #FFD54F',
+              borderRadius: 10,
+              padding: '12px 14px',
+              marginBottom: 10,
+              animation: 'bounce-in 0.3s ease forwards',
+            }}
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+          >
+            <div style={{
+              fontFamily: '"Noto Sans KR", sans-serif',
+              fontSize: 11,
+              color: '#5D4037',
+              lineHeight: 1.6,
+              marginBottom: 8,
+            }}>
+              🎮 <b>게임 꿀팁:</b><br />
+              개발자에게 커피를 사주면<br />
+              실력이 오른다는 소문이...☕️
+            </div>
+            <button
+              onClick={handleCopy}
+              onTouchStart={(e) => { e.preventDefault(); handleCopy(e); }}
+              style={{
+                fontFamily: '"Noto Sans KR", monospace',
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#1565C0',
+                background: copied ? '#E8F5E9' : '#FFF',
+                border: `2px solid ${copied ? '#4CAF50' : '#90CAF9'}`,
+                borderRadius: 8,
+                padding: '8px 14px',
+                cursor: 'pointer',
+                width: '100%',
+                transition: 'all 0.2s',
+                letterSpacing: 0.5,
+              }}
+            >
+              {copied ? '✅ 복사 완료!' : '🏦 카뱅 3333-06-8147746'}
+            </button>
+            <div style={{
+              fontFamily: '"Noto Sans KR", sans-serif',
+              fontSize: 9,
+              color: '#999',
+              marginTop: 5,
+            }}>
+              탭하면 계좌번호가 복사됩니다
+            </div>
+          </div>
+        )}
 
         <button
           onClick={(e) => { e.stopPropagation(); onRestart(); }}
