@@ -31,6 +31,7 @@ function Dodge() {
   const scoreRef = useRef(0);
   const lastScoreTimeRef = useRef(0);
   const keysRef = useRef({});
+  const joystickRef = useRef({ active: false, x: 0, y: 0, vx: 0, vy: 0 });
 
   // Image Objects
   const [imagesReady, setImagesReady] = useState(false);
@@ -117,18 +118,32 @@ function Dodge() {
 
       // --- UPDATE ---
       if (state === 'playing') {
-        const friction = 0.82;
-        const accel = 1.0;
-        if (keysRef.current['KeyA'] || keysRef.current['ArrowLeft']) playerVelRef.current.x -= accel;
-        if (keysRef.current['KeyD'] || keysRef.current['ArrowRight']) playerVelRef.current.x += accel;
-        if (keysRef.current['KeyW'] || keysRef.current['ArrowUp']) playerVelRef.current.y -= accel;
-        if (keysRef.current['KeyS'] || keysRef.current['ArrowDown']) playerVelRef.current.y += accel;
+        const speed = 4.2 + (scoreRef.current / 1500); // Gradual speed increase
+        
+        // 1. Keyboard Movement
+        let mvx = 0; let mvy = 0;
+        if (keysRef.current['ArrowUp'] || keysRef.current['KeyW']) mvy -= 1;
+        if (keysRef.current['ArrowDown'] || keysRef.current['KeyS']) mvy += 1;
+        if (keysRef.current['ArrowLeft'] || keysRef.current['KeyA']) mvx -= 1;
+        if (keysRef.current['ArrowRight'] || keysRef.current['KeyD']) mvx += 1;
+        
+        // 2. Joystick Movement (Combine with keyboard)
+        if (joystickRef.current.active) {
+          mvx += joystickRef.current.vx;
+          mvy += joystickRef.current.vy;
+        }
 
-        playerVelRef.current.x *= friction;
-        playerVelRef.current.y *= friction;
-        playerPosRef.current.x += playerVelRef.current.x;
-        playerPosRef.current.y += playerVelRef.current.y;
+        if (mvx !== 0 || mvy !== 0) {
+          const mag = Math.sqrt(mvx * mvx + mvy * mvy);
+          // Digital movement: Move at constant speed, no inertia
+          if (mag > 0.05) {
+            playerPosRef.current.x += (mvx / mag) * speed;
+            playerPosRef.current.y += (mvy / mag) * speed;
+          }
+        }
 
+        // Keep character within canvas boundaries
+        const { width: w, height: h } = canvas;
         playerPosRef.current.x = Math.max(0, Math.min(w - PLAYER_SIZE, playerPosRef.current.x));
         playerPosRef.current.y = Math.max(0, Math.min(h - PLAYER_SIZE, playerPosRef.current.y));
 
@@ -298,21 +313,20 @@ function Dodge() {
     setGameState('idle');
   };
 
-  const handleTouchMove = (e) => {
-    if (stateRef.current !== 'playing') return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    const rect = canvasRef.current.getBoundingClientRect();
-    const tx = touch.clientX - rect.left - PLAYER_SIZE / 2;
-    const ty = touch.clientY - rect.top - PLAYER_SIZE / 2;
-    playerPosRef.current.x += (tx - playerPosRef.current.x) * 0.35;
-    playerPosRef.current.y += (ty - playerPosRef.current.y) * 0.35;
-  };
+  // Drag movement is removed per user request to prioritize joystick precision
+
 
   return (
     <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', overflow: 'hidden' }}>
       <div style={{ position: 'relative', width: canvasSize.w, height: canvasSize.h, background: '#0a0a20' }}>
-        <canvas ref={canvasRef} width={canvasSize.w} height={canvasSize.h} onTouchMove={handleTouchMove} style={{ display: 'block', touchAction: 'none' }} />
+        <canvas ref={canvasRef} width={canvasSize.w} height={canvasSize.h} style={{ display: 'block', touchAction: 'none' }} />
+        
+        {gameState === 'playing' && (
+          <div style={{ position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)', pointerEvents: 'all' }}>
+            <Joystick onChange={(v) => { joystickRef.current = v; }} />
+          </div>
+        )}
+
         {gameState === 'playing' && (
           <div style={{ position: 'absolute', top: 20, left: 0, right: 0, padding: '0 20px', display: 'flex', justifyContent: 'space-between', zIndex: 10, pointerEvents: 'none' }}>
             <div style={{ fontFamily: '"Press Start 2P"', fontSize: 20, color: '#FFF', textShadow: '2px 2px 0 #000' }}>{score}</div>
@@ -450,6 +464,77 @@ function InitialsInput({ score, onSubmit, isSubmitting }) {
           {isSubmitting ? 'SAVING...' : 'REGISTER'}
         </button>
       </div>
+    </div>
+  );
+}
+
+function Joystick({ onChange }) {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [active, setActive] = useState(false);
+  const containerRef = useRef(null);
+  const radius = 60;
+
+  const handleTouch = (e) => {
+    if (!containerRef.current) return;
+    const touch = e.touches[0];
+    const rect = containerRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    let dx = touch.clientX - centerX;
+    let dy = touch.clientY - centerY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    
+    if (dist > radius) {
+      dx = (dx / dist) * radius;
+      dy = (dy / dist) * radius;
+    }
+    
+    setPos({ x: dx, y: dy });
+    onChange({ active: true, x: dx, y: dy, vx: dx / radius, vy: dy / radius });
+  };
+
+  const handleEnd = () => {
+    setPos({ x: 0, y: 0 });
+    setActive(false);
+    onChange({ active: false, x: 0, y: 0, vx: 0, vy: 0 });
+  };
+
+  return (
+    <div 
+      ref={containerRef}
+      style={{
+        width: radius * 2 + 20,
+        height: radius * 2 + 20,
+        borderRadius: '50%',
+        border: '1px solid rgba(255,255,255,0.2)',
+        background: 'rgba(255,255,255,0.08)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        touchAction: 'none',
+        position: 'relative'
+      }}
+      onTouchStart={(e) => { setActive(true); handleTouch(e); }}
+      onTouchMove={handleTouch}
+      onTouchEnd={handleEnd}
+    >
+      {/* Directional Indicators */}
+      <div style={{ position: 'absolute', top: 5, color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>▲</div>
+      <div style={{ position: 'absolute', bottom: 5, color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>▼</div>
+      <div style={{ position: 'absolute', left: 5, color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>◀</div>
+      <div style={{ position: 'absolute', right: 5, color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>▶</div>
+
+      <div style={{
+        width: 50,
+        height: 50,
+        borderRadius: '50%',
+        background: active ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)',
+        border: '1px solid rgba(255,255,255,0.4)',
+        transform: `translate(${pos.x}px, ${pos.y}px)`,
+        transition: active ? 'none' : 'transform 0.15s cubic-bezier(0.1, 0.5, 0.1, 1)',
+        boxShadow: active ? '0 0 15px rgba(255,255,255,0.2)' : 'none'
+      }} />
     </div>
   );
 }
