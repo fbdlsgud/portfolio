@@ -4,13 +4,22 @@ import styles from './Games.module.css';
 
 const GAMES = [
   {
-    id: "elizabeth-jump",
-    title: "Elizabeth Jump",
-    description: "엘리자베스가 대나무 파이프 사이를 무사히 통과할 수 있게 도와주세요! 최고 점수에 도전해보세요.",
+    id: "duck-jump",
+    title: "Duck Jump",
+    description: "오리가 대나무 파이프 사이를 무사히 통과할 수 있게 도와주세요! 최고 점수에 도전해보세요.",
     tags: ["Arcade", "Canvas", "Gintama"],
     badge: "New",
     icon: "🎮",
     href: "/jump",
+  },
+  {
+    id: "duck-dodge",
+    title: "Duck Dodge",
+    description: "우주 공간에서 쏟아지는 탄막을 피하세요! 오리의 생존 본능을 보여줄 때입니다 (Cosmic Edition).",
+    tags: ["Arcade", "Dodging", "Cosmic"],
+    badge: "New",
+    icon: "🚀",
+    href: "/dodge",
   },
 ];
 

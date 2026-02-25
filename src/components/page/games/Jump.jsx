@@ -199,12 +199,12 @@ export default function ElizabethGame() {
   }, []);
 
   useEffect(() => {
-    const best = getBestScore();
+    const best = getBestScore('jump');
     bestRef.current = best;
     setBestScore(best);
 
     const fetchLeaderboard = async () => {
-      const data = await getLeaderboard();
+      const data = await getLeaderboard('jump');
       setLeaderboard(data);
     };
     fetchLeaderboard();
@@ -332,7 +332,7 @@ export default function ElizabethGame() {
     }
 
     // 서버 탑 10 확인
-    const currentLeaderboard = await getLeaderboard();
+    const currentLeaderboard = await getLeaderboard('jump');
     setLeaderboard(currentLeaderboard);
     
     const isTop10 = currentLeaderboard.length < 10 || scoreRef.current > currentLeaderboard[9].score;
@@ -550,7 +550,7 @@ export default function ElizabethGame() {
     setGameState('idle');
     lastStateChangeRef.current = Date.now();
     const fetchLeaderboard = async () => {
-      const data = await getLeaderboard();
+      const data = await getLeaderboard('jump');
       setLeaderboard(data);
     };
     fetchLeaderboard();
@@ -648,8 +648,8 @@ export default function ElizabethGame() {
             onSubmit={async (initials) => {
               setIsSubmitting(true);
               try {
-                await saveLeaderboardRecord(initials, score);
-                const newData = await getLeaderboard();
+                await saveLeaderboardRecord(initials, score, 'jump');
+                const newData = await getLeaderboard('jump');
                 setLeaderboard(newData);
                 setShowInitialsInput(false);
               } catch (e) {
@@ -978,7 +978,7 @@ function StartScreen({ onStart, bestScore, onShowRecords, leaderboard, showRecor
           textShadow: '2px 2px 0 rgba(0,0,0,0.15)',
           lineHeight: 1.3,
         }}>
-          ELIZABETH
+          DUCK
         </div>
         <div style={{
           fontFamily: '"Press Start 2P", monospace',
@@ -1015,7 +1015,7 @@ function StartScreen({ onStart, bestScore, onShowRecords, leaderboard, showRecor
         }}>
           📱 탭하여 점프!<br />
           🎮 스페이스바도 OK<br />
-          🎋 대나무를 피하세요!
+          🎋 대나무파이프를 피하세요!
         </div>
 
         {bestScore > 0 && (

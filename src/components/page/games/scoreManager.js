@@ -1,16 +1,19 @@
 import axios from '../../../axios/axiosInstance';
 
-const BEST_SCORE_KEY = 'elizabeth-best';
+const JUMP_BEST_KEY = 'duck-jump-best';
+const DODGE_BEST_KEY = 'duck-dodge-best';
+
+const getBestKey = (gameType) => gameType === 'dodge' ? DODGE_BEST_KEY : JUMP_BEST_KEY;
 
 /**
  * 서버 리더보드 조회 (Top 10)
  */
-export async function getLeaderboard() {
+export async function getLeaderboard(gameType = 'jump') {
   try {
-    const response = await axios.get('/leaderboard');
+    const response = await axios.get(`/leaderboard?gameType=${gameType}`);
     return response.data;
   } catch (e) {
-    console.error('Failed to fetch leaderboard:', e);
+    console.error(`Failed to fetch ${gameType} leaderboard:`, e);
     return [];
   }
 }
@@ -18,22 +21,23 @@ export async function getLeaderboard() {
 /**
  * 서버에 점수 등록
  */
-export async function saveLeaderboardRecord(initials, score) {
+export async function saveLeaderboardRecord(initials, score, gameType = 'jump') {
   try {
     const response = await axios.post('/leaderboard', {
       initials: initials.toUpperCase().slice(0, 3),
-      score
+      score,
+      gameType
     });
     
     // 로컬 최고 점수 업데이트
-    const currentBest = getBestScore();
+    const currentBest = getBestScore(gameType);
     if (score > currentBest) {
-      localStorage.setItem(BEST_SCORE_KEY, String(score));
+      localStorage.setItem(getBestKey(gameType), String(score));
     }
     
     return response.data;
   } catch (e) {
-    console.error('Failed to save leaderboard record:', e);
+    console.error(`Failed to save ${gameType} leaderboard record:`, e);
     throw e;
   }
 }
@@ -41,12 +45,12 @@ export async function saveLeaderboardRecord(initials, score) {
 /**
  * 로컬 최고 점수 조회
  */
-export function getBestScore() {
+export function getBestScore(gameType = 'jump') {
   try {
-    const score = localStorage.getItem(BEST_SCORE_KEY);
+    const score = localStorage.getItem(getBestKey(gameType));
     return score ? parseInt(score, 10) : 0;
   } catch (e) {
-    console.error('Failed to load best score:', e);
+    console.error(`Failed to load ${gameType} best score:`, e);
     return 0;
   }
 }
@@ -54,10 +58,10 @@ export function getBestScore() {
 /**
  * 모든 기록 삭제 (초기화) - 로컬 최고 기록만 삭제
  */
-export function clearBestScore() {
+export function clearBestScore(gameType = 'jump') {
   try {
-    localStorage.removeItem(BEST_SCORE_KEY);
+    localStorage.removeItem(getBestKey(gameType));
   } catch (e) {
-    console.error('Failed to clear best score:', e);
+    console.error(`Failed to clear ${gameType} best score:`, e);
   }
 }
