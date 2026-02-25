@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { getBestScore, saveLeaderboardRecord, getLeaderboard } from './scoreManager';
 
 // Assets
@@ -103,7 +103,11 @@ function Dodge() {
       window.removeEventListener('keydown', kd);
       window.removeEventListener('keyup', ku);
     };
-  }, [imagesReady]); // Re-bind if imagesReady changes to ensure handleStart works with latest state if needed, though handleStart is stable. Actually, no deps needed if handleStart is stable. Let's add it for safety.
+  }, [imagesReady]); // Re-bind if imagesReady changes
+
+  const handleJoystickChange = useCallback((v) => {
+    joystickRef.current = v;
+  }, []);
 
   // 3. Game Engine
   useEffect(() => {
@@ -344,7 +348,7 @@ function Dodge() {
         
         {gameState === 'playing' && (
           <div style={{ position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)', pointerEvents: 'all' }}>
-            <Joystick onChange={(v) => { joystickRef.current = v; }} />
+            <Joystick onChange={handleJoystickChange} />
           </div>
         )}
 
@@ -495,6 +499,28 @@ function Joystick({ onChange }) {
   const containerRef = useRef(null);
   const radius = 60;
 
+  const handleTouch = useCallback((e) => {
+    if (!containerRef.current) return;
+    const touch = e.touches[0] || (e.changedTouches && e.changedTouches[0]);
+    if (!touch) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    let dx = touch.clientX - centerX;
+    let dy = touch.clientY - centerY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    
+    if (dist > radius) {
+      dx = (dx / dist) * radius;
+      dy = (dy / dist) * radius;
+    }
+    
+    setPos({ x: dx, y: dy });
+    onChange({ active: true, x: dx, y: dy, vx: dx / radius, vy: dy / radius });
+  }, [onChange, radius]);
+
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -526,29 +552,7 @@ function Joystick({ onChange }) {
       el.removeEventListener('touchend', onEnd);
       el.removeEventListener('touchcancel', onEnd);
     };
-  }, []);
-
-  const handleTouch = (e) => {
-    if (!containerRef.current) return;
-    const touch = e.touches[0] || (e.changedTouches && e.changedTouches[0]);
-    if (!touch) return;
-    
-    const rect = containerRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    let dx = touch.clientX - centerX;
-    let dy = touch.clientY - centerY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    
-    if (dist > radius) {
-      dx = (dx / dist) * radius;
-      dy = (dy / dist) * radius;
-    }
-    
-    setPos({ x: dx, y: dy });
-    onChange({ active: true, x: dx, y: dy, vx: dx / radius, vy: dy / radius });
-  };
+  }, [handleTouch, onChange]);
 
   return (
     <div 
