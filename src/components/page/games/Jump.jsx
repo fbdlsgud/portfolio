@@ -11,7 +11,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { saveGameRecord, getBestScore, getGameRecords } from './scoreManager';
+import { getBestScore, getLeaderboard, saveLeaderboardRecord } from './scoreManager';
 
 // ─── 게임 상수 ───────────────────────────────────────────────────────────────
 const GRAVITY = 0.42;
@@ -157,13 +157,16 @@ export default function ElizabethGame() {
   const shakeRef = useRef(0);
   const rafRef = useRef(0);
   const canvasSizeRef = useRef({ w: 390, h: 844 });
+  const lastStateChangeRef = useRef(0);
 
   const [gameState, setGameState] = useState('idle');
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
   const [canvasSize, setCanvasSize] = useState({ w: 390, h: 844 });
   const [showRecords, setShowRecords] = useState(false);
-  const [records, setRecords] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [showInitialsInput, setShowInitialsInput] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const updateSize = () => {
@@ -182,8 +185,11 @@ export default function ElizabethGame() {
     bestRef.current = best;
     setBestScore(best);
 
-    const gameRecords = getGameRecords();
-    setRecords(gameRecords);
+    const fetchLeaderboard = async () => {
+      const data = await getLeaderboard();
+      setLeaderboard(data);
+    };
+    fetchLeaderboard();
 
     const { w, h } = canvasSizeRef.current;
     cloudsRef.current = Array.from({ length: 6 }, (_, i) => ({
@@ -294,7 +300,7 @@ export default function ElizabethGame() {
   const getPipeInterval = (s) =>
     Math.max(PIPE_INTERVAL_INITIAL - s * 15, PIPE_INTERVAL_MIN);
 
-  const handleDeath = useCallback(() => {
+  const handleDeath = useCallback(async () => {
     stateRef.current = 'dead';
     setGameState('dead');
     shakeRef.current = 18;
@@ -306,7 +312,16 @@ export default function ElizabethGame() {
       bestRef.current = scoreRef.current;
       setBestScore(scoreRef.current);
     }
-    saveGameRecord(scoreRef.current);
+
+    // 서버 탑 10 확인
+    const currentLeaderboard = await getLeaderboard();
+    setLeaderboard(currentLeaderboard);
+    
+    const isTop10 = currentLeaderboard.length < 10 || scoreRef.current > currentLeaderboard[9].score;
+    
+    if (isTop10 && scoreRef.current > 0) {
+      setShowInitialsInput(true);
+    }
   }, [spawnDeathParticles]);
 
   useEffect(() => {
@@ -502,8 +517,12 @@ export default function ElizabethGame() {
     initGame();
     stateRef.current = 'idle';
     setGameState('idle');
-    const gameRecords = getGameRecords();
-    setRecords(gameRecords);
+    lastStateChangeRef.current = Date.now();
+    const fetchLeaderboard = async () => {
+      const data = await getLeaderboard();
+      setLeaderboard(data);
+    };
+    fetchLeaderboard();
   }, [initGame]);
 
   const handleInput = useCallback((e) => {
@@ -518,6 +537,9 @@ export default function ElizabethGame() {
     getAudioCtx();
 
     if (state === 'idle') {
+      // 모바일 Ghost Click 방지: 리트라이 버튼 클릭 직후 바로 시작되지 않도록 400ms 지연 확인
+      if (Date.now() - lastStateChangeRef.current < 400) return;
+
       initGame();
       stateRef.current = 'playing';
       setGameState('playing');
@@ -579,14 +601,34 @@ export default function ElizabethGame() {
             onStart={handleInput}
             bestScore={bestScore}
             onShowRecords={() => setShowRecords(true)}
-            records={records}
+            leaderboard={leaderboard}
             showRecords={showRecords}
             onCloseRecords={() => setShowRecords(false)}
           />
         )}
 
-        {gameState === 'gameover' && (
+        {gameState === 'gameover' && !showInitialsInput && (
           <GameOverScreen score={score} bestScore={bestScore} onRestart={handleRestart} />
+        )}
+
+        {showInitialsInput && (
+          <InitialsInput
+            score={score}
+            onSubmit={async (initials) => {
+              setIsSubmitting(true);
+              try {
+                await saveLeaderboardRecord(initials, score);
+                const newData = await getLeaderboard();
+                setLeaderboard(newData);
+                setShowInitialsInput(false);
+              } catch (e) {
+                alert('저장 실패했습니다.');
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
+            isSubmitting={isSubmitting}
+          />
         )}
       </div>
     </div>
@@ -852,7 +894,7 @@ function drawHUD(ctx, w, score, best, state) {
   ctx.restore();
 }
 
-function StartScreen({ onStart, bestScore, onShowRecords, records, showRecords, onCloseRecords }) {
+function StartScreen({ onStart, bestScore, onShowRecords, leaderboard, showRecords, onCloseRecords }) {
   const [blink, setBlink] = useState(true);
 
   useEffect(() => {
@@ -961,7 +1003,7 @@ function StartScreen({ onStart, bestScore, onShowRecords, records, showRecords, 
           </div>
         )}
 
-        {records.length > 0 && (
+        {leaderboard.length > 0 && (
           <div style={{ marginBottom: 10, marginTop: 6 }}>
             <button
               onClick={(e) => { e.stopPropagation(); onShowRecords(); }}
@@ -984,7 +1026,7 @@ function StartScreen({ onStart, bestScore, onShowRecords, records, showRecords, 
                 e.currentTarget.style.transform = '';
               }}
             >
-              📊 기록 보기
+              📊 글로벌 랭킹
             </button>
           </div>
         )}
@@ -1039,7 +1081,7 @@ function StartScreen({ onStart, bestScore, onShowRecords, records, showRecords, 
               📊 게임 기록
             </div>
 
-            {records.length === 0 ? (
+            {leaderboard.length === 0 ? (
               <div style={{
                 fontFamily: '"Noto Sans KR", sans-serif',
                 fontSize: 12,
@@ -1051,7 +1093,7 @@ function StartScreen({ onStart, bestScore, onShowRecords, records, showRecords, 
               </div>
             ) : (
               <div>
-                {records.slice(0, 10).map((record, idx) => (
+                {leaderboard.map((record, idx) => (
                   <div
                     key={idx}
                     style={{
@@ -1059,17 +1101,17 @@ function StartScreen({ onStart, bestScore, onShowRecords, records, showRecords, 
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       padding: '10px 0',
-                      borderBottom: idx < records.length - 1 ? '1px solid #EEE' : 'none',
+                      borderBottom: idx < leaderboard.length - 1 ? '1px solid #EEE' : 'none',
                       fontFamily: '"Press Start 2P", monospace',
                       fontSize: 10,
                     }}
                   >
-                    <span style={{ color: '#888' }}>#{idx + 1}</span>
-                    <span style={{ color: '#1b5e20', fontWeight: 'bold' }}>
-                      {record.score}점
-                    </span>
-                    <span style={{ color: '#999', fontSize: 8 }}>
-                      {record.time}
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      <span style={{ color: '#888', width: 25 }}>#{idx + 1}</span>
+                      <span style={{ color: '#1b5e20', fontWeight: 'bold' }}>{record.initials}</span>
+                    </div>
+                    <span style={{ color: '#333' }}>
+                      {record.score}
                     </span>
                   </div>
                 ))}
@@ -1221,6 +1263,108 @@ function GameOverScreen({ score, bestScore, onRestart }) {
           }}
         >
           ▶ RETRY
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function InitialsInput({ score, onSubmit, isSubmitting }) {
+  const [initials, setInitials] = useState('');
+
+  return (
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      background: 'rgba(0,0,0,0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 2000,
+      backdropFilter: 'blur(2px)',
+    }}>
+      <div style={{
+        background: 'white',
+        padding: '30px',
+        borderRadius: '18px',
+        textAlign: 'center',
+        border: '4px solid #1b5e20',
+        width: '85%',
+        maxWidth: '300px',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+        animation: 'bounce-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      }}>
+        <div style={{ 
+          fontFamily: '"Press Start 2P", monospace', 
+          fontSize: '14px', 
+          color: '#e53935', 
+          marginBottom: '20px',
+          textShadow: '1px 1px 0 rgba(0,0,0,0.1)'
+        }}>TOP 10!</div>
+        
+        <div style={{ 
+          fontSize: '13px', 
+          color: '#333', 
+          marginBottom: '18px', 
+          fontFamily: '"Noto Sans KR", sans-serif',
+          lineHeight: '1.6'
+        }}>
+          새로운 기록을 달성했습니다!<br/>이니셜 3글자를 입력하세요.
+        </div>
+        
+        <div style={{
+          background: '#f9f9f9',
+          padding: '15px',
+          borderRadius: '12px',
+          border: '2px dashed #C5E1A5',
+          marginBottom: '20px'
+        }}>
+          <div style={{ fontFamily: '"Press Start 2P"', fontSize: '10px', color: '#888', marginBottom: '8px' }}>SCORE</div>
+          <div style={{ fontFamily: '"Press Start 2P"', fontSize: '24px', color: '#1b5e20' }}>{score}</div>
+        </div>
+
+        <input
+          autoFocus
+          maxLength={3}
+          value={initials}
+          onChange={(e) => setInitials(e.target.value.toUpperCase().replace(/[^A-Z]/g, ''))}
+          placeholder="___"
+          style={{
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: '28px',
+            textAlign: 'center',
+            width: '100%',
+            padding: '12px',
+            border: '3px solid #E0E0E0',
+            borderRadius: '10px',
+            marginBottom: '22px',
+            textTransform: 'uppercase',
+            outline: 'none',
+            color: '#1b5e20',
+            backgroundColor: '#fff',
+            letterSpacing: '5px'
+          }}
+        />
+        
+        <button
+          disabled={initials.length < 3 || isSubmitting}
+          onClick={() => onSubmit(initials)}
+          style={{
+            width: '100%',
+            padding: '14px',
+            background: initials.length < 3 ? '#bdbdbd' : '#2e7d32',
+            color: 'white',
+            border: 'none',
+            borderRadius: '10px',
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: '11px',
+            cursor: initials.length < 3 ? 'default' : 'pointer',
+            boxShadow: initials.length < 3 ? 'none' : '0 4px 0 #1b5e20',
+            transition: 'all 0.1s',
+            letterSpacing: '1px'
+          }}
+        >
+          {isSubmitting ? 'SAVING...' : 'REGISTER RANK'}
         </button>
       </div>
     </div>
