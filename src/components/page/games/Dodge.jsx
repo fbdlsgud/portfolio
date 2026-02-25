@@ -30,6 +30,7 @@ function Dodge() {
   const itemsRef = useRef([]);
   const scoreRef = useRef(0);
   const lastScoreTimeRef = useRef(0);
+  const lastFrameTimeRef = useRef(0);
   const keysRef = useRef({});
   const joystickRef = useRef({ active: false, x: 0, y: 0, vx: 0, vy: 0 });
 
@@ -117,11 +118,17 @@ function Dodge() {
     const dpr = window.devicePixelRatio || 1;
 
     const loop = () => {
+      const state = stateRef.current;
+      const now = Date.now();
+      if (!lastFrameTimeRef.current) lastFrameTimeRef.current = now;
+      
+      // Calculate Delta Time (Target 60 FPS = dt: 1.0)
+      const deltaTime = (now - lastFrameTimeRef.current) / (1000 / 60);
+      lastFrameTimeRef.current = now;
+
       // Use clientWidth/Height to avoid stale closures from React state
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
-      const state = stateRef.current;
-      const now = Date.now();
 
       // Ensure canvas internal buffer is scaled for DPI
       if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
@@ -146,15 +153,14 @@ function Dodge() {
         
         if (mvx !== 0 || mvy !== 0) {
           const mag = Math.sqrt(mvx * mvx + mvy * mvy);
-          playerPosRef.current.x += (mvx / mag) * speed;
-          playerPosRef.current.y += (mvy / mag) * speed;
+          playerPosRef.current.x += (mvx / mag) * speed * deltaTime;
+          playerPosRef.current.y += (mvy / mag) * speed * deltaTime;
         }
 
         // 2. Joystick Movement (Analog/Proportional)
         if (joystickRef.current.active) {
-          //vx, vy are normalized to -1...1 based on displacement
-          playerPosRef.current.x += joystickRef.current.vx * speed;
-          playerPosRef.current.y += joystickRef.current.vy * speed;
+          playerPosRef.current.x += joystickRef.current.vx * speed * deltaTime;
+          playerPosRef.current.y += joystickRef.current.vy * speed * deltaTime;
         }
 
         // Keep character within canvas boundaries
@@ -167,8 +173,9 @@ function Dodge() {
           lastScoreTimeRef.current = now;
         }
 
-        // Bullets Spawn
-        if (Math.random() < 0.045 + Math.min(scoreRef.current / 400, 0.07)) {
+        // Bullets Spawn (Adjusted for deltaTime)
+        const spawnChance = (0.045 + Math.min(scoreRef.current / 400, 0.07)) * deltaTime;
+        if (Math.random() < spawnChance) {
           const side = Math.floor(Math.random() * 4);
           let bx, by, bvx, bvy;
           const bspeed = 2.5 + Math.min(scoreRef.current / 25, 4.5);
@@ -180,7 +187,7 @@ function Dodge() {
         }
 
         // Items Spawn
-        if (Math.random() < 0.0005) { // 0.05% 드롭률 (매우 희귀)
+        if (Math.random() < 0.0005 * deltaTime) { 
           const side = Math.floor(Math.random() * 4);
           let ix, iy, ivx, ivy;
           if (side === 0) { ix = Math.random() * w; iy = -30; ivx = (Math.random()-0.5)*2; ivy = 2; }
@@ -193,7 +200,7 @@ function Dodge() {
         // Bullets Update & Hitbox
         const invincible = now < invincibleUntilRef.current;
         bulletsRef.current = bulletsRef.current.filter(b => {
-          b.x += b.vx; b.y += b.vy;
+          b.x += b.vx * deltaTime; b.y += b.vy * deltaTime;
           if (!invincible) {
             const dx = (b.x + BULLET_SIZE/2) - (playerPosRef.current.x + PLAYER_SIZE/2);
             const dy = (b.y + BULLET_SIZE/2) - (playerPosRef.current.y + PLAYER_SIZE/2);
@@ -222,7 +229,7 @@ function Dodge() {
 
         // Items Update & Hitbox
         itemsRef.current = itemsRef.current.filter(it => {
-          it.x += it.vx; it.y += it.vy;
+          it.x += it.vx * deltaTime; it.y += it.vy * deltaTime;
           const dx = (it.x + 15) - (playerPosRef.current.x + PLAYER_SIZE/2);
           const dy = (it.y + 15) - (playerPosRef.current.y + PLAYER_SIZE/2);
           if (Math.sqrt(dx*dx + dy*dy) < (PLAYER_SIZE/2 + 10)) {
@@ -303,6 +310,7 @@ function Dodge() {
       rafRef.current = requestAnimationFrame(loop);
     };
 
+    lastFrameTimeRef.current = Date.now();
     rafRef.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(rafRef.current);
   }, [imagesReady]); // Only re-run if images reload, not on score change
@@ -320,6 +328,7 @@ function Dodge() {
     itemsRef.current = [];
     scoreRef.current = 0;
     lastScoreTimeRef.current = Date.now();
+    lastFrameTimeRef.current = Date.now(); // Reset frame time on start
     setHearts(INITIAL_HEARTS); setScore(0);
     stateRef.current = 'playing'; setGameState('playing');
   };
