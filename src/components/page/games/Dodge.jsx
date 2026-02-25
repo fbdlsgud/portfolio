@@ -110,40 +110,50 @@ function Dodge() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
 
     const loop = () => {
-      const { width: w, height: h } = canvas;
+      // Use clientWidth/Height to avoid stale closures from React state
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
       const state = stateRef.current;
       const now = Date.now();
+
+      // Ensure canvas internal buffer is scaled for DPI
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+      }
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.imageSmoothingEnabled = false; // Optional, for pixel-art clarity
 
       // --- UPDATE ---
       if (state === 'playing') {
         const speed = 4.2 + (scoreRef.current / 1500); // Gradual speed increase
         
-        // 1. Keyboard Movement
+        // 1. Keyboard Movement (Normalized)
         let mvx = 0; let mvy = 0;
         if (keysRef.current['ArrowUp'] || keysRef.current['KeyW']) mvy -= 1;
         if (keysRef.current['ArrowDown'] || keysRef.current['KeyS']) mvy += 1;
         if (keysRef.current['ArrowLeft'] || keysRef.current['KeyA']) mvx -= 1;
         if (keysRef.current['ArrowRight'] || keysRef.current['KeyD']) mvx += 1;
         
-        // 2. Joystick Movement (Combine with keyboard)
-        if (joystickRef.current.active) {
-          mvx += joystickRef.current.vx;
-          mvy += joystickRef.current.vy;
-        }
-
         if (mvx !== 0 || mvy !== 0) {
           const mag = Math.sqrt(mvx * mvx + mvy * mvy);
-          // Digital movement: Move at constant speed, no inertia
-          if (mag > 0.05) {
-            playerPosRef.current.x += (mvx / mag) * speed;
-            playerPosRef.current.y += (mvy / mag) * speed;
-          }
+          playerPosRef.current.x += (mvx / mag) * speed;
+          playerPosRef.current.y += (mvy / mag) * speed;
+        }
+
+        // 2. Joystick Movement (Analog/Proportional)
+        if (joystickRef.current.active) {
+          //vx, vy are normalized to -1...1 based on displacement
+          playerPosRef.current.x += joystickRef.current.vx * speed;
+          playerPosRef.current.y += joystickRef.current.vy * speed;
         }
 
         // Keep character within canvas boundaries
-        const { width: w, height: h } = canvas;
         playerPosRef.current.x = Math.max(0, Math.min(w - PLAYER_SIZE, playerPosRef.current.x));
         playerPosRef.current.y = Math.max(0, Math.min(h - PLAYER_SIZE, playerPosRef.current.y));
 
@@ -285,16 +295,18 @@ function Dodge() {
         ctx.strokeRect(it.x, it.y, 30, 35); ctx.shadowBlur = 0;
       });
 
+      ctx.restore();
       rafRef.current = requestAnimationFrame(loop);
     };
 
     rafRef.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [bestScore]);
+  }, [imagesReady]); // Only re-run if images reload, not on score change
 
   const handleStart = () => {
     if (showRecordsRef.current) return;
-    const { width: w, height: h } = canvasRef.current;
+    const w = canvasRef.current.clientWidth;
+    const h = canvasRef.current.clientHeight;
     playerPosRef.current = { x: w / 2 - PLAYER_SIZE / 2, y: h / 2 - PLAYER_SIZE / 2 };
     playerVelRef.current = { x: 0, y: 0 };
     playerHeartsRef.current = INITIAL_HEARTS;
@@ -318,8 +330,17 @@ function Dodge() {
 
   return (
     <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', overflow: 'hidden' }}>
-      <div style={{ position: 'relative', width: canvasSize.w, height: canvasSize.h, background: '#0a0a20' }}>
-        <canvas ref={canvasRef} width={canvasSize.w} height={canvasSize.h} style={{ display: 'block', touchAction: 'none' }} />
+      <div style={{ position: 'relative', width: canvasSize.w, height: canvasSize.h, background: '#0a0a20', boxShadow: '0 0 30px rgba(0,0,0,0.5)' }}>
+        <canvas 
+          ref={canvasRef} 
+          style={{ 
+            display: 'block', 
+            touchAction: 'none', 
+            width: canvasSize.w, 
+            height: canvasSize.h,
+            imageRendering: 'crisp-edges' // For some browsers
+          }} 
+        />
         
         {gameState === 'playing' && (
           <div style={{ position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)', pointerEvents: 'all' }}>
@@ -474,9 +495,44 @@ function Joystick({ onChange }) {
   const containerRef = useRef(null);
   const radius = 60;
 
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const onStart = (e) => {
+      if (e.cancelable) e.preventDefault();
+      setActive(true);
+      handleTouch(e);
+    };
+    const onMove = (e) => {
+      if (e.cancelable) e.preventDefault();
+      handleTouch(e);
+    };
+    const onEnd = (e) => {
+      if (e && e.cancelable) e.preventDefault();
+      setPos({ x: 0, y: 0 });
+      setActive(false);
+      onChange({ active: false, x: 0, y: 0, vx: 0, vy: 0 });
+    };
+
+    el.addEventListener('touchstart', onStart, { passive: false });
+    el.addEventListener('touchmove', onMove, { passive: false });
+    el.addEventListener('touchend', onEnd, { passive: false });
+    el.addEventListener('touchcancel', onEnd, { passive: false });
+
+    return () => {
+      el.removeEventListener('touchstart', onStart);
+      el.removeEventListener('touchmove', onMove);
+      el.removeEventListener('touchend', onEnd);
+      el.removeEventListener('touchcancel', onEnd);
+    };
+  }, []);
+
   const handleTouch = (e) => {
     if (!containerRef.current) return;
-    const touch = e.touches[0];
+    const touch = e.touches[0] || (e.changedTouches && e.changedTouches[0]);
+    if (!touch) return;
+    
     const rect = containerRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -494,12 +550,6 @@ function Joystick({ onChange }) {
     onChange({ active: true, x: dx, y: dy, vx: dx / radius, vy: dy / radius });
   };
 
-  const handleEnd = () => {
-    setPos({ x: 0, y: 0 });
-    setActive(false);
-    onChange({ active: false, x: 0, y: 0, vx: 0, vy: 0 });
-  };
-
   return (
     <div 
       ref={containerRef}
@@ -515,15 +565,12 @@ function Joystick({ onChange }) {
         touchAction: 'none',
         position: 'relative'
       }}
-      onTouchStart={(e) => { setActive(true); handleTouch(e); }}
-      onTouchMove={handleTouch}
-      onTouchEnd={handleEnd}
     >
       {/* Directional Indicators */}
-      <div style={{ position: 'absolute', top: 5, color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>▲</div>
-      <div style={{ position: 'absolute', bottom: 5, color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>▼</div>
-      <div style={{ position: 'absolute', left: 5, color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>◀</div>
-      <div style={{ position: 'absolute', right: 5, color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>▶</div>
+      <div style={{ position: 'absolute', top: 5, color: 'rgba(255,255,255,0.3)', fontSize: 10, pointerEvents: 'none' }}>▲</div>
+      <div style={{ position: 'absolute', bottom: 5, color: 'rgba(255,255,255,0.3)', fontSize: 10, pointerEvents: 'none' }}>▼</div>
+      <div style={{ position: 'absolute', left: 5, color: 'rgba(255,255,255,0.3)', fontSize: 10, pointerEvents: 'none' }}>◀</div>
+      <div style={{ position: 'absolute', right: 5, color: 'rgba(255,255,255,0.3)', fontSize: 10, pointerEvents: 'none' }}>▶</div>
 
       <div style={{
         width: 50,
