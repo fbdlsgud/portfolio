@@ -15,6 +15,10 @@ import { getBestScore, getLeaderboard, saveLeaderboardRecord } from './scoreMana
 
 import flyImgSrc from '../../../assets/games/jump/elizabeth-fly.png';
 import deadImgSrc from '../../../assets/games/jump/elizabeth-dead.png';
+import katsuraFlySrc from '../../../assets/games/jump/katsura-fly.png';
+import katsuraDeadSrc from '../../../assets/games/jump/katsura-dead.png';
+import gintokiFlySrc from '../../../assets/games/jump/gintoki-fly.png';
+import gintokiDeadSrc from '../../../assets/games/jump/gintoki-dead.png';
 import bgImgSrc from '../../../assets/games/jump/game-bg.png';
 import bgNoonSrc from '../../../assets/games/jump/bg-noon.png';
 import bgEveningSrc from '../../../assets/games/jump/bg-evening.png';
@@ -137,6 +141,28 @@ const deadImg = new Image();
 deadImg.crossOrigin = 'anonymous';
 deadImg.src = deadImgSrc;
 
+const katsuraFlyImg = new Image();
+katsuraFlyImg.crossOrigin = 'anonymous';
+katsuraFlyImg.src = katsuraFlySrc;
+
+const katsuraDeadImg = new Image();
+katsuraDeadImg.crossOrigin = 'anonymous';
+katsuraDeadImg.src = katsuraDeadSrc;
+
+const gintokiFlyImg = new Image();
+gintokiFlyImg.crossOrigin = 'anonymous';
+gintokiFlyImg.src = gintokiFlySrc;
+
+const gintokiDeadImg = new Image();
+gintokiDeadImg.crossOrigin = 'anonymous';
+gintokiDeadImg.src = gintokiDeadSrc;
+
+const CHARACTER_DATA = {
+  elizabeth: { name: '엘리', flyImg: flyImg, deadImg: deadImg, flySrc: flyImgSrc, desc: '사탕을 든 수수께끼 오리' },
+  katsura: { name: '흑발엘리', flyImg: katsuraFlyImg, deadImg: katsuraDeadImg, flySrc: katsuraFlySrc, desc: '진지한 눈빛의 검은머리 오리' },
+  gintoki: { name: '은발엘리', flyImg: gintokiFlyImg, deadImg: gintokiDeadImg, flySrc: gintokiFlySrc, desc: '만화를 좋아하는 은발 오리' },
+};
+
 const bgImg = new Image();
 bgImg.crossOrigin = 'anonymous';
 bgImg.src = bgImgSrc;
@@ -185,6 +211,10 @@ export default function ElizabethGame() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [showInitialsInput, setShowInitialsInput] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedChar, setSelectedChar] = useState('elizabeth');
+  const [showCharSelect, setShowCharSelect] = useState(false);
+  const showCharSelectRef = useRef(false);
+  const selectedCharRef = useRef('elizabeth');
 
   useEffect(() => {
     const updateSize = () => {
@@ -529,7 +559,7 @@ export default function ElizabethGame() {
         ctx.restore();
       });
 
-      drawElizabeth(ctx, birdX, birdYRef.current, birdVelRef.current, state, wingTimerRef.current);
+      drawElizabeth(ctx, birdX, birdYRef.current, birdVelRef.current, state, wingTimerRef.current, selectedCharRef.current);
 
       ctx.restore();
 
@@ -556,9 +586,25 @@ export default function ElizabethGame() {
     fetchLeaderboard();
   }, [initGame]);
 
+  // 캐릭터 선택 후 게임 시작
+  const startGameAfterSelect = useCallback(() => {
+    showCharSelectRef.current = false;
+    setShowCharSelect(false);
+    getAudioCtx();
+    initGame();
+    stateRef.current = 'playing';
+    setGameState('playing');
+    birdVelRef.current = JUMP_FORCE;
+    wingTimerRef.current = 10;
+    playJumpSound();
+  }, [initGame]);
+
   const handleInput = useCallback((e) => {
     e?.preventDefault();
     const state = stateRef.current;
+
+    // 캐릭터 선택 화면이 열려있으면 입력 무시
+    if (showCharSelectRef.current) return;
     
     if (state === 'gameover') {
       handleRestart();
@@ -568,15 +614,11 @@ export default function ElizabethGame() {
     getAudioCtx();
 
     if (state === 'idle') {
-      // 모바일 Ghost Click 방지: 리트라이 버튼 클릭 직후 바로 시작되지 않도록 400ms 지연 확인
+      // 모바일 Ghost Click 방지
       if (Date.now() - lastStateChangeRef.current < 400) return;
-
-      initGame();
-      stateRef.current = 'playing';
-      setGameState('playing');
-      birdVelRef.current = JUMP_FORCE;
-      wingTimerRef.current = 10;
-      playJumpSound();
+      // 캐릭터 선택 화면 열기 (게임 바로 시작 X)
+      showCharSelectRef.current = true;
+      setShowCharSelect(true);
       return;
     }
 
@@ -627,14 +669,25 @@ export default function ElizabethGame() {
           style={{ display: 'block', touchAction: 'none', userSelect: 'none' }}
         />
 
-        {gameState === 'idle' && (
+        {gameState === 'idle' && !showCharSelect && (
           <StartScreen
-            onStart={handleInput}
+            onStart={() => setShowCharSelect(true)}
             bestScore={bestScore}
             onShowRecords={() => setShowRecords(true)}
             leaderboard={leaderboard}
             showRecords={showRecords}
             onCloseRecords={() => setShowRecords(false)}
+          />
+        )}
+
+        {showCharSelect && (
+          <CharacterSelectScreen
+            selected={selectedChar}
+            onSelect={(charId) => {
+              setSelectedChar(charId);
+              selectedCharRef.current = charId;
+            }}
+            onConfirm={startGameAfterSelect}
           />
         )}
 
@@ -666,9 +719,10 @@ export default function ElizabethGame() {
   );
 }
 
-function drawElizabeth(ctx, x, y, vel, state, wingTimer) {
+function drawElizabeth(ctx, x, y, vel, state, wingTimer, charId) {
   const isDead = state === 'dead' || state === 'gameover';
-  const img = isDead ? deadImg : flyImg;
+  const charData = CHARACTER_DATA[charId || 'elizabeth'];
+  const img = isDead ? charData.deadImg : charData.flyImg;
 
   const rotation = isDead
     ? Math.min(Math.PI * 0.6, Math.abs(vel) * 0.06)
@@ -923,6 +977,137 @@ function drawHUD(ctx, w, score, best, state) {
   }
 
   ctx.restore();
+}
+
+function CharacterSelectScreen({ selected, onSelect, onConfirm }) {
+  const chars = Object.entries(CHARACTER_DATA);
+  const charIds = chars.map(([id]) => id);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
+        e.preventDefault();
+        const idx = charIds.indexOf(selected);
+        const next = e.code === 'ArrowLeft'
+          ? (idx - 1 + charIds.length) % charIds.length
+          : (idx + 1) % charIds.length;
+        onSelect(charIds[next]);
+      }
+      if (e.code === 'Space') {
+        e.preventDefault();
+        onConfirm();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selected, onSelect, onConfirm]);
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        inset: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        pointerEvents: 'all',
+      }}
+    >
+      <div
+        style={{
+          background: 'rgba(255,255,255,0.95)',
+          border: '4px solid #1b5e20',
+          borderRadius: 18,
+          padding: '24px 20px 20px',
+          textAlign: 'center',
+          boxShadow: '0 6px 0 #1b5e20, 0 10px 30px rgba(0,0,0,0.35)',
+          maxWidth: 320,
+          width: '85%',
+          animation: 'bounce-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+        }}
+        onClick={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+      >
+        <div style={{
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: 11,
+          color: '#1b5e20',
+          marginBottom: 18,
+        }}>
+          🎭 캐릭터 선택
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 18 }}>
+          {chars.map(([id, data]) => (
+            <div
+              key={id}
+              onClick={() => onSelect(id)}
+              onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); onSelect(id); }}
+              style={{
+                flex: 1,
+                padding: '12px 6px 10px',
+                borderRadius: 12,
+                border: selected === id ? '3px solid #1b5e20' : '2px solid #ddd',
+                background: selected === id ? '#E8F5E9' : '#fff',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                transform: selected === id ? 'scale(1.04)' : 'scale(1)',
+              }}
+            >
+              <img
+                src={data.flySrc}
+                alt={data.name}
+                style={{
+                  width: 60,
+                  height: 60,
+                  objectFit: 'contain',
+                  marginBottom: 6,
+                }}
+              />
+              <div style={{
+                fontFamily: '"Press Start 2P", monospace',
+                fontSize: 7,
+                color: selected === id ? '#1b5e20' : '#666',
+                marginBottom: 3,
+              }}>
+                {data.name}
+              </div>
+              <div style={{
+                fontFamily: '"Noto Sans KR", sans-serif',
+                fontSize: 9,
+                color: '#999',
+                lineHeight: 1.3,
+              }}>
+                {data.desc}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={onConfirm}
+          onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); onConfirm(); }}
+          style={{
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: 10,
+            color: '#fff',
+            background: '#1b5e20',
+            border: '2px solid #0d3a0d',
+            borderRadius: 8,
+            padding: '10px 24px',
+            cursor: 'pointer',
+            boxShadow: '0 3px 0 #0d3a0d',
+            transition: 'transform 0.1s',
+          }}
+          onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(2px)'; }}
+          onMouseUp={(e) => { e.currentTarget.style.transform = ''; }}
+        >
+          ▶ GAME START
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function StartScreen({ onStart, bestScore, onShowRecords, leaderboard, showRecords, onCloseRecords }) {
