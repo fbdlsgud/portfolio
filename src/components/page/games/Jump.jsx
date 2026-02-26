@@ -627,7 +627,7 @@ export default function ElizabethGame() {
       wingTimerRef.current = 10;
       playJumpSound();
     }
-  }, [initGame, handleRestart]);
+  }, [handleRestart]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1000,7 +1000,7 @@ function CharacterSelectScreen({ selected, onSelect, onConfirm }) {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [selected, onSelect, onConfirm]);
+  }, [selected, onSelect, onConfirm, charIds]);
 
   return (
     <div
