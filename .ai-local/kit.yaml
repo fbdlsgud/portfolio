@@ -1,0 +1,7 @@
+kit:
+  name: "codex-agentic-dev-kit"
+  version: "0.2.0"
+
+install:
+  profile: "react-vite"
+  mode: "full"

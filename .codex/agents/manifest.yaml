@@ -1,0 +1,95 @@
+version: "1"
+
+agents:
+  - id: orchestrator
+    path: ".codex/agents/orchestrator.toml"
+    access: "workspace-write"
+    owns: "Routing and coordination for broad work."
+    skills:
+      - ".agents/skills/orchestrate/SKILL.md"
+      - ".agents/skills/coordination/SKILL.md"
+      - ".agents/skills/workflow-routing/SKILL.md"
+
+  - id: pm-planner
+    path: ".codex/agents/pm-planner.toml"
+    access: "read-only"
+    owns: "Requirements, scope, acceptance criteria, and task breakdown."
+    skills:
+      - ".agents/skills/product-discovery/SKILL.md"
+
+  - id: architecture-reviewer
+    path: ".codex/agents/architecture-reviewer.toml"
+    access: "read-only"
+    owns: "Architecture, boundaries, tradeoffs, and durable decisions."
+    skills:
+      - ".agents/skills/architecture/SKILL.md"
+
+  - id: product-designer
+    path: ".codex/agents/product-designer.toml"
+    access: "read-only"
+    owns: "UX flows, interaction states, visual hierarchy, accessibility, and design QA."
+    skills:
+      - ".agents/skills/design/SKILL.md"
+
+  - id: frontend-engineer
+    path: ".codex/agents/frontend-engineer.toml"
+    access: "workspace-write"
+    owns: "Web UI, client state, styling, accessibility, and browser-visible behavior."
+    skills:
+      - ".agents/skills/frontend/SKILL.md"
+
+  - id: mobile-engineer
+    path: ".codex/agents/mobile-engineer.toml"
+    access: "workspace-write"
+    owns: "Mobile UI, device flows, React Native, Flutter, and native app work."
+    skills:
+      - ".agents/skills/mobile/SKILL.md"
+
+  - id: backend-engineer
+    path: ".codex/agents/backend-engineer.toml"
+    access: "workspace-write"
+    owns: "Backend APIs, services, auth, integrations, and server-side behavior."
+    skills:
+      - ".agents/skills/backend/SKILL.md"
+
+  - id: db-engineer
+    path: ".codex/agents/db-engineer.toml"
+    access: "workspace-write"
+    owns: "Schema design, migrations, queries, and data integrity."
+    skills:
+      - ".agents/skills/db/SKILL.md"
+
+  - id: debug-investigator
+    path: ".codex/agents/debug-investigator.toml"
+    access: "workspace-write"
+    owns: "Bug reproduction, root-cause diagnosis, minimal fixes, and regression checks."
+    skills:
+      - ".agents/skills/debug/SKILL.md"
+
+  - id: qa-reviewer
+    path: ".codex/agents/qa-reviewer.toml"
+    access: "read-only"
+    owns: "Security, correctness, performance, accessibility, quality, and test gap review."
+    skills:
+      - ".agents/skills/qa/SKILL.md"
+
+  - id: independent-verifier
+    path: ".codex/agents/independent-verifier.toml"
+    access: "read-only"
+    owns: "Ralph criteria judging, evidence collection, and regression detection."
+    skills:
+      - ".agents/skills/ralph/SKILL.md"
+
+  - id: docs-curator
+    path: ".codex/agents/docs-curator.toml"
+    access: "workspace-write"
+    owns: "Feature logs, error cases, review cases, decisions, and docs sync."
+    skills:
+      - ".agents/skills/docs/SKILL.md"
+
+  - id: scm-manager
+    path: ".codex/agents/scm-manager.toml"
+    access: "workspace-write"
+    owns: "Git status, staging, commits, branches, PR summaries, and changelog hygiene."
+    skills:
+      - ".agents/skills/scm/SKILL.md"

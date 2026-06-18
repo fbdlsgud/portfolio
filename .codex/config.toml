@@ -1,0 +1,10 @@
+[features]
+goals = true
+child_agents_md = true
+hooks = true
+
+[analytics]
+enabled = false
+
+[feedback]
+enabled = false

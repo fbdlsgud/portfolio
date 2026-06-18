@@ -1,0 +1,11 @@
+mode: full
+available_modes:
+  - light
+  - standard
+  - full
+
+behavior:
+  light: "fast default; minimal ceremony"
+  standard: "balanced default; logs meaningful work and uses subagents when useful"
+  full: "mature agentic workflow; enables orchestrate, ultrawork, ralph, verifier, and eval loop"
+

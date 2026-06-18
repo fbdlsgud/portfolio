@@ -1,0 +1,21 @@
+workflow: ralph
+status: active
+started_at: "YYYY-MM-DDTHH:MM:SSZ"
+iteration: 0
+max_iterations: 5
+repeated_failure_block_threshold: 3
+report_path: "docs/ai/ralph-runs/YYYYMMDDTHHMMSSZ-ralph.md"
+criteria:
+  - id: C1
+    description: "Observable completion criterion"
+    verification: "Command, file check, browser/device observation, or log evidence"
+    status: PENDING
+    fail_count: 0
+judge_results: []
+report_requirements:
+  - "Record completion criteria before implementation."
+  - "Record each judge iteration with evidence."
+  - "Record final PASS, FAIL, or BLOCKED verdict."
+notes:
+  - "Keep criteria mechanical and evidence-based."
+  - "Increment fail_count only after independent verification fails the same criterion."

@@ -1,0 +1,41 @@
+{
+  "workflows": {
+    "ralph": {
+      "persistent": true,
+      "keywords": ["ralph", "랄프", "끝까지", "될 때까지", "완료될 때까지"],
+      "clear_keywords": ["ralph done", "ralph stop", "랄프 끝", "랄프 종료", "랄프 중단", "workflow done", "반복 중단", "그만 반복"]
+    },
+    "ultrawork": {
+      "persistent": true,
+      "keywords": ["ultrawork", "ultra work", "울트라워크", "검증 루프"]
+    },
+    "orchestrate": {
+      "persistent": true,
+      "keywords": ["orchestrate", "병렬", "전부 해", "한번에", "알아서"]
+    },
+    "project-onboarding": {
+      "persistent": false,
+      "keywords": ["컨벤션", "프로젝트 세팅", "이런 앱", "만들 거야"]
+    },
+    "product-discovery": {
+      "persistent": false,
+      "keywords": ["앱 아이디어", "MVP", "기능 제안", "product discovery"]
+    },
+    "architecture": {
+      "persistent": false,
+      "keywords": ["architecture", "아키텍처", "구조", "ADR", "경계"]
+    },
+    "debug": {
+      "persistent": false,
+      "keywords": ["debug", "bug", "error", "버그", "에러", "오류"]
+    },
+    "review": {
+      "persistent": false,
+      "keywords": ["review", "qa", "audit", "리뷰", "검토"]
+    },
+    "eval": {
+      "persistent": false,
+      "keywords": ["eval", "평가", "품질 비교", "성능 비교"]
+    }
+  }
+}

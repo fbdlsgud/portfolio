@@ -1,0 +1,256 @@
+version: "1"
+
+workflows:
+  - id: plan
+    path: ".agents/workflows/plan.md"
+    purpose: "Plan broad, unclear, or multi-area work before implementation."
+    keywords:
+      - "plan"
+      - "planning"
+      - "계획"
+      - "계획 세워"
+      - "작업 나눠"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/product-discovery/SKILL.md"
+      - ".agents/skills/architecture/SKILL.md"
+      - ".agents/skills/coordination/SKILL.md"
+
+  - id: project-onboarding
+    path: ".agents/workflows/project-onboarding.md"
+    purpose: "Turn project stack, conventions, commands, and planned features into local AI context."
+    keywords:
+      - "project onboarding"
+      - "project setup"
+      - "새 프로젝트"
+      - "프로젝트 세팅"
+      - "컨벤션"
+      - "온보딩"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/project-onboarding/SKILL.md"
+      - ".agents/skills/dev-workflow/SKILL.md"
+      - ".agents/skills/docs/SKILL.md"
+
+  - id: product-discovery
+    path: ".agents/workflows/product-discovery.md"
+    purpose: "Shape rough app ideas into MVP suggestions, feature boundaries, and open questions."
+    keywords:
+      - "product discovery"
+      - "mvp"
+      - "앱 아이디어"
+      - "기능 제안"
+      - "기획"
+      - "요구사항"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/product-discovery/SKILL.md"
+      - ".agents/skills/design/SKILL.md"
+      - ".agents/skills/architecture/SKILL.md"
+
+  - id: architecture
+    path: ".agents/workflows/architecture.md"
+    purpose: "Frame structural decisions, boundaries, tradeoffs, and ADR-style records."
+    keywords:
+      - "architecture"
+      - "architect"
+      - "아키텍처"
+      - "아키텍트"
+      - "구조"
+      - "ADR"
+      - "경계"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/architecture/SKILL.md"
+
+  - id: implement
+    path: ".agents/workflows/implement.md"
+    purpose: "Normal feature implementation with scoped validation and feature logs."
+    keywords:
+      - "implement"
+      - "implementation"
+      - "구현"
+      - "개발"
+      - "만들어"
+      - "기능 구현"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/dev-workflow/SKILL.md"
+      - ".agents/skills/qa/SKILL.md"
+      - ".agents/skills/docs/SKILL.md"
+
+  - id: work
+    path: ".agents/workflows/work.md"
+    purpose: "Step-by-step implementation with validation and one remediation pass."
+    keywords:
+      - "work"
+      - "작업"
+      - "진행"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/dev-workflow/SKILL.md"
+      - ".agents/skills/qa/SKILL.md"
+
+  - id: debug
+    path: ".agents/workflows/debug.md"
+    purpose: "Reproduce bugs, diagnose root cause, fix minimally, and record reusable failures."
+    keywords:
+      - "debug"
+      - "bug"
+      - "버그"
+      - "에러"
+      - "오류"
+      - "재현"
+      - "고쳐"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/debug/SKILL.md"
+      - ".agents/skills/qa/SKILL.md"
+      - ".agents/skills/dev-workflow/SKILL.md"
+      - ".agents/skills/docs/SKILL.md"
+
+  - id: review
+    path: ".agents/workflows/review.md"
+    purpose: "Code review and QA findings by severity with evidence and remediation."
+    keywords:
+      - "review"
+      - "code review"
+      - "qa"
+      - "audit"
+      - "리뷰"
+      - "검토"
+      - "검수"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/review/SKILL.md"
+      - ".agents/skills/qa/SKILL.md"
+      - ".agents/skills/docs/SKILL.md"
+
+  - id: docs
+    path: ".agents/workflows/docs.md"
+    purpose: "Feature logs, error cases, decisions, proposed rules, and documentation sync."
+    keywords:
+      - "docs"
+      - "documentation"
+      - "문서"
+      - "기록"
+      - "feature-log"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/docs/SKILL.md"
+
+  - id: scm
+    path: ".agents/workflows/scm.md"
+    purpose: "Git status, staging, commits, branches, PR summaries, and changelog work."
+    keywords:
+      - "git"
+      - "scm"
+      - "commit"
+      - "branch"
+      - "커밋"
+      - "브랜치"
+      - "푸시"
+      - "pr"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/scm/SKILL.md"
+
+  - id: orchestrate
+    path: ".agents/workflows/orchestrate.md"
+    purpose: "Split broad work across focused subagents and verify coordination."
+    persistent: true
+    keywords:
+      - "orchestrate"
+      - "orchestration"
+      - "병렬"
+      - "역할 나눠"
+      - "분담"
+      - "전부 해"
+      - "전체"
+      - "한번에"
+      - "알아서"
+    clear_keywords:
+      - "orchestrate done"
+      - "orchestrate stop"
+      - "워크플로우 끝"
+      - "workflow done"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/orchestrate/SKILL.md"
+      - ".agents/skills/coordination/SKILL.md"
+      - ".agents/skills/qa/SKILL.md"
+      - ".agents/skills/docs/SKILL.md"
+
+  - id: ultrawork
+    path: ".agents/workflows/ultrawork.md"
+    purpose: "Plan, implement, verify, refine, and ship quality-sensitive work."
+    persistent: true
+    keywords:
+      - "ultrawork"
+      - "ultra work"
+      - "울트라워크"
+      - "검증 루프"
+      - "고품질"
+      - "큰 기능"
+      - "복잡한"
+      - "제대로"
+    clear_keywords:
+      - "ultrawork done"
+      - "ultrawork stop"
+      - "울트라워크 끝"
+      - "workflow done"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/ultrawork/SKILL.md"
+      - ".agents/skills/orchestrate/SKILL.md"
+      - ".agents/skills/coordination/SKILL.md"
+      - ".agents/skills/dev-workflow/SKILL.md"
+      - ".agents/skills/qa/SKILL.md"
+      - ".agents/skills/docs/SKILL.md"
+
+  - id: ralph
+    path: ".agents/workflows/ralph.md"
+    purpose: "Repeat ultrawork and independent verification until criteria pass or safeguards stop."
+    persistent: true
+    keywords:
+      - "ralph"
+      - "랄프"
+      - "랄프로"
+      - "끝까지"
+      - "될 때까지"
+      - "완료될 때까지"
+      - "무한루프"
+      - "반복 검증"
+    clear_keywords:
+      - "ralph done"
+      - "ralph stop"
+      - "랄프 끝"
+      - "랄프 종료"
+      - "랄프 중단"
+      - "workflow done"
+      - "반복 중단"
+      - "그만 반복"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/ralph/SKILL.md"
+      - ".agents/skills/ultrawork/SKILL.md"
+      - ".agents/skills/orchestrate/SKILL.md"
+      - ".agents/skills/coordination/SKILL.md"
+      - ".agents/skills/dev-workflow/SKILL.md"
+      - ".agents/skills/qa/SKILL.md"
+      - ".agents/skills/docs/SKILL.md"
+
+  - id: eval
+    path: ".agents/workflows/eval.md"
+    purpose: "Evaluate whether AI setup changes improved or regressed behavior."
+    keywords:
+      - "eval"
+      - "evaluation"
+      - "평가"
+      - "품질 비교"
+      - "성능 비교"
+    skills:
+      - ".agents/skills/workflow-routing/SKILL.md"
+      - ".agents/skills/qa/SKILL.md"
+      - ".agents/skills/dev-workflow/SKILL.md"
+      - ".agents/skills/docs/SKILL.md"

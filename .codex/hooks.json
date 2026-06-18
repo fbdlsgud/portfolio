@@ -1,0 +1,59 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "name": "workflow-state",
+            "type": "command",
+            "command": "bash .codex/hooks/workflow-state.sh",
+            "timeout": 5
+          },
+          {
+            "name": "keyword-detector",
+            "type": "command",
+            "command": "bash .codex/hooks/keyword-detector.sh",
+            "timeout": 5
+          },
+          {
+            "name": "skill-injector",
+            "type": "command",
+            "command": "bash .codex/hooks/skill-injector.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "name": "danger-guard",
+            "type": "command",
+            "command": "bash .codex/hooks/danger-guard.sh",
+            "timeout": 5
+          },
+          {
+            "name": "test-filter",
+            "type": "command",
+            "command": "bash .codex/hooks/test-filter.sh",
+            "timeout": 5
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "name": "persistent-mode",
+            "type": "command",
+            "command": "bash .codex/hooks/persistent-mode.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+# Installed from Agentic Dev Kit profile: react-vite
+
+project:
+  name: ""
+  profile: "react-vite"
+  description: "React react-scripts frontend project"
+
+
+stack:
+  frontend: React react-scripts
+  backend: ""
+  database: ""
+  package_manager: npm
+
+paths:
+  frontend: src
+  backend: ""
+  docs: docs
+  ai_docs: docs/ai
+
+commands:
+  install: npm install
+  dev: npm run start
+  lint: ""
+  typecheck: ""
+  test: npm run test
+  build: npm run build
+
+quality:
+  required_before_done:
+    - lint
+    - typecheck
+    - build
+  screenshots_required_for_ui: true
+
+
+command_policy:
+  source: "detected-project-files"
+  confirm_before_first_use: false
+  notes: "Commands reviewed from package.json during project onboarding."
+
+agent:
+  default_workflow: "implement"
+  prefer_subagents_for_broad_tasks: true
+  permanent_rule_changes_require_review: true
