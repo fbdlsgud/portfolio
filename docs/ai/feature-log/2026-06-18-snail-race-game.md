@@ -20,6 +20,8 @@ Add a party betting race game where 1-7 friends can pick colored snails and deci
 - Strengthened race UX with faster visible lane movement, START/GOAL gates, progress wake, moving track texture, dust trails, speed lines, leader lane highlight, and finish pop.
 - Ralph redesign pass added smoothed visual progress, distance markers, slime trail, body crawl, shell roll, and reduced-motion handling.
 - Post-feedback pass removed camera/track movement and changed the scene to match the reference: fixed forest/sky field, fixed dirt lanes, right-side finish flags, and snail-only forward motion.
+- Progress-mapping pass changed the runner from layout `left` movement to transform-based movement driven by the same visual progress value used for the percent label, progress wake, and slime trail.
+- The race loop now waits until all snails visually reach the finish before switching to the finished state, preventing the animation from stopping before the goal line.
 - Updated Games nav active state to include `/dodge` and `/snail-race`.
 
 ## Validation
@@ -31,6 +33,7 @@ Add a party betting race game where 1-7 friends can pick colored snails and deci
 - After motion feedback, `npm run build` passed again and the dev server hot-reloaded successfully.
 - Ralph iteration 1 passed all criteria in `docs/ai/ralph-runs/20260618T102153Z-snail-race-ralph.md`.
 - After fixed-track feedback, `npm run build` passed again, the dev server hot-reloaded successfully, and `curl -I http://127.0.0.1:3000/snail-race` returned `HTTP/1.1 200 OK`.
+- After progress-mapping feedback, `git diff --check` passed, `npm run build` passed, the dev server hot-reloaded successfully, and `curl -I http://127.0.0.1:3000/snail-race` returned `HTTP/1.1 200 OK`.
 
 ## Follow-Up Risks
 

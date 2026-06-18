@@ -50,6 +50,15 @@ The user clarified that the track UI itself must not move. The camera-follow int
 - Restyled the scene toward the reference: fixed sky, mountains, forest rows, central hanging sign, and static field.
 - Validation after the correction: `npm run build` passed, the dev server hot-reloaded successfully, and `curl -I http://127.0.0.1:3000/snail-race` returned `HTTP/1.1 200 OK`.
 
+## Progress Mapping Correction
+
+The user further clarified that each snail must visibly move on the track according to its percent progress and reach the finish dynamically.
+
+- Replaced percent-derived `left` layout movement with a transform-based runner coordinate, `--runner-x`, computed from the same visual progress value shown in the lane percentage.
+- Kept progress wake, slime trail, and snail coordinate tied to the same `laneVisualProgress` source.
+- Changed the race loop so it does not enter `finished` until all runners have visually reached the finish, even if their target progress already hit 100.
+- Validation after this correction: `git diff --check` passed, `npm run build` passed, the dev server hot-reloaded successfully, and `curl -I http://127.0.0.1:3000/snail-race` returned `HTTP/1.1 200 OK`.
+
 ## Final
 
-Ralph iteration 1 passed, then the fixed-track user feedback superseded the camera-follow portion of C1. Final verification used build output, local route response, dev-server logs, and source-level checks. In-app browser screenshots were not used because the browser webview had previously timed out attaching in this session.
+Ralph iteration 1 passed, then the fixed-track and progress-mapping feedback superseded the camera-follow portion of C1. Final verification used build output, local route response, dev-server logs, and source-level checks. In-app browser screenshots were not used because the browser webview had previously timed out attaching in this session.

@@ -16,6 +16,7 @@ const SNAILS = [
 
 const DEFAULT_NAMES = ['네모', '민트', '두부', '치즈', '보라', '분홍', '터보'];
 const DISTANCE_MARKS = [0, 25, 50, 75, 100];
+const FINISH_OFFSET_PX = 104;
 
 const makeEmptyProgress = (racers) =>
   racers.reduce((acc, racer) => {
@@ -168,7 +169,17 @@ export default function SnailRace() {
       setVisualProgress(nextVisualProgress);
       setFinishOrder([...finishOrderRef.current]);
 
-      if (finishOrderRef.current.length >= runners.length) {
+      const allTargetFinished = finishOrderRef.current.length >= runners.length;
+      const allVisuallyFinished =
+        allTargetFinished && runners.every((runner) => nextVisualProgress[runner.id] >= 99.8);
+
+      if (allVisuallyFinished) {
+        const finalProgress = runners.reduce((acc, runner) => {
+          acc[runner.id] = 100;
+          return acc;
+        }, {});
+        visualProgressRef.current = finalProgress;
+        setVisualProgress(finalProgress);
         setRaceState('finished');
         animationRef.current = 0;
         return;
@@ -311,8 +322,9 @@ export default function SnailRace() {
           {entrants.map((entrant, index) => {
             const rank = getOrdinal(finishOrder, entrant.id);
             const isCaught = raceState === 'finished' && caughtRunner?.id === entrant.id;
-            const laneVisualProgress = visualProgress[entrant.id] || 0;
-            const runnerLeft = Math.min(91, laneVisualProgress * 0.91);
+            const laneVisualProgress = Math.min(100, Math.max(0, visualProgress[entrant.id] || 0));
+            const runnerOffset = (laneVisualProgress / 100) * FINISH_OFFSET_PX;
+            const runnerX = `calc(${laneVisualProgress}% - ${runnerOffset}px)`;
             const isLeader = raceState === 'racing' && getRaceLead(sortedByProgress, entrant.id);
             const hasFinished = Boolean(rank);
 
@@ -353,7 +365,13 @@ export default function SnailRace() {
                     </span>
                   ))}
 
-                  <div className={styles.trackLine} style={{ '--lane-progress': `${laneVisualProgress}%` }}>
+                  <div
+                    className={styles.trackLine}
+                    style={{
+                      '--lane-progress': `${laneVisualProgress}%`,
+                      '--runner-x': runnerX,
+                    }}
+                  >
                     <span className={styles.progressWake} aria-hidden="true" />
                     <span className={styles.slimeTrail} aria-hidden="true" />
                     <div
@@ -362,9 +380,7 @@ export default function SnailRace() {
                         raceState === 'racing' ? styles.snailMoving : '',
                         hasFinished ? styles.snailFinished : '',
                       ].filter(Boolean).join(' ')}
-                      style={{
-                        left: `${runnerLeft}%`,
-                      }}
+                      style={{ '--runner-color': entrant.color }}
                     >
                       <SnailSprite color={entrant.color} accent={entrant.accent} label={entrant.label} moving={raceState === 'racing'} />
                     </div>
