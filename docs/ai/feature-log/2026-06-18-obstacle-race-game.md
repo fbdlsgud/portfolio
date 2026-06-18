@@ -17,6 +17,7 @@ Build a 1-7 player party betting runner game where automatic racers cross a retr
 - `docs/ai/ralph-runs/20260618T111547Z-obstacle-race-ralph.md`
 - `docs/ai/error-cases/2026-06-18-obstacle-race-stationary-motion.md`
 - `docs/ai/error-cases/2026-06-18-obstacle-race-transform-conflict.md`
+- `docs/ai/error-cases/2026-06-18-obstacle-race-distance-overflow.md`
 - `docs/ai/proposed-rules/2026-06-18-motion-game-visual-qa.md`
 
 ## Implementation Shape
@@ -43,6 +44,7 @@ Build a 1-7 player party betting runner game where automatic racers cross a retr
 - Added a stage progress meter, READY/RESULT stage overlays, obstacle warning markers, stronger viewport vignette, and compact mobile header treatment.
 - Enabled React Router future flags in `BrowserRouter` to remove runtime console warnings during QA.
 - Replaced the stale CRA default App test with a real app navigation render test and mocked the project axios wrapper to keep tests network-free.
+- Fixed the stage distance readout so it displays the leading runner's actual clamped distance, not the camera's far edge. Finish now displays `2440m / 2440m` instead of overflowing beyond the course target.
 
 ## Validation
 
@@ -55,6 +57,7 @@ Build a 1-7 player party betting runner game where automatic racers cross a retr
 - `curl -I http://127.0.0.1:3000/obstacle-race` returned `HTTP/1.1 200 OK`.
 - Playwright visual QA with bundled runtime and local Chrome passed after START at 2.7s: world transform was `translate3d(-170.044px, 0px, 0px)`, runner transforms included `690.964px`, `604.859px`, `506.44px`, and `630.777px`, obstacle count was 32, and screenshot was written to `/private/tmp/obstacle-race-visual-qa.png`.
 - Post-polish Playwright audit passed on desktop 4P, desktop 7P, mobile 4P, and mobile 7P. Every sampled frame reported `consoleErrors: []`, `bodyOverlaps: []`, and `pageOverflowX: 0`. Screenshots were written to `/private/tmp/obstacle-race-desktop-4p.png`, `/private/tmp/obstacle-race-desktop-7p.png`, `/private/tmp/obstacle-race-mobile-4p.png`, and `/private/tmp/obstacle-race-mobile-7p.png`.
+- Finish audit passed desktop 1P, desktop 7P, and mobile 7P through the full race result. Each scenario reported `finished: true`, `consoleErrors: []`, `maxOverflowX: 0`, `bodyOverlapCount: 0`, and `resultPresent: true`. Finish screenshots were written to `/private/tmp/obstacle-race-desktop-1p-finish.png`, `/private/tmp/obstacle-race-desktop-7p-finish.png`, and `/private/tmp/obstacle-race-mobile-7p-finish.png`.
 
 ## Follow-Up Risks
 

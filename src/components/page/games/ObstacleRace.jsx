@@ -343,6 +343,7 @@ export default function ObstacleRace() {
   const leader = sortedRunners[0];
   const worldHeight = LANE_START_Y + (entrants.length - 1) * LANE_GAP + 160;
   const leaderProgress = leader ? Math.round(getProgress(leader)) : 0;
+  const leaderDistance = raceState === 'idle' || !leader ? 0 : Math.round(clamp(leader.x, 0, FINISH_X));
   const finishLabel = penaltyMode === 'first' ? '1등 걸림' : penaltyMode === 'last' ? '꼴찌 걸림' : '충돌왕 걸림';
 
   const obstacleClassMap = {
@@ -460,7 +461,7 @@ export default function ObstacleRace() {
             <div className={styles.stageMeter} aria-hidden="true">
               <i style={{ width: `${leaderProgress}%` }} />
             </div>
-            <strong>{Math.round(clamp(cameraX + stageWidth, 0, COURSE_LENGTH))}m / {FINISH_X}m</strong>
+            <strong>{leaderDistance}m / {FINISH_X}m</strong>
           </div>
 
           <div
