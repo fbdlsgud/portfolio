@@ -5,7 +5,6 @@ import Board from "../page/board/Board";
 import Jump from "../page/games/Jump";
 import Dodge from "../page/games/Dodge";
 import Games from "../page/games/Games";
-import SnailRace from "../page/games/SnailRace";
 
 const routes = [
     { path: "/" , element: <Main /> },
@@ -14,8 +13,7 @@ const routes = [
     { path: "/board" , element: <Board /> },
     { path: "/games", element: <Games />},
     { path: "/jump", element: <Jump />},
-    { path: "/dodge", element: <Dodge />},
-    { path: "/snail-race", element: <SnailRace />}
+    { path: "/dodge", element: <Dodge />}
 ]
 
 
