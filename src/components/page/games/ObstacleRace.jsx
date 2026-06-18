@@ -7,9 +7,10 @@ const COURSE_LENGTH = 2680;
 const START_X = 72;
 const FINISH_X = 2440;
 const DEFAULT_STAGE_WIDTH = 980;
-const LANE_START_Y = 126;
-const LANE_GAP = 58;
+const LANE_START_Y = 112;
+const LANE_GAP = 96;
 const JUMP_DURATION = 760;
+const JUMP_HEIGHT = 42;
 const OBSTACLE_TRIGGER_DISTANCE = 96;
 
 const OBSTACLES = [
@@ -246,7 +247,7 @@ export default function ObstacleRace() {
 
           if (jumping) {
             const jumpRatio = clamp((timestamp - jumpStart) / Math.max(1, jumpUntil - jumpStart), 0, 1);
-            jumpLift = Math.sin(jumpRatio * Math.PI) * 72;
+            jumpLift = Math.sin(jumpRatio * Math.PI) * JUMP_HEIGHT;
             x += runner.speed * 1.08 * deltaSeconds;
           } else {
             x += runner.speed * deltaSeconds;
@@ -340,7 +341,7 @@ export default function ObstacleRace() {
 
   const resultRunner = raceState === 'finished' ? getCaughtRunner(penaltyMode, finishOrder, runners) : null;
   const leader = sortedRunners[0];
-  const worldHeight = LANE_START_Y + entrants.length * LANE_GAP + 92;
+  const worldHeight = LANE_START_Y + (entrants.length - 1) * LANE_GAP + 160;
   const leaderProgress = leader ? Math.round(getProgress(leader)) : 0;
   const finishLabel = penaltyMode === 'first' ? '1등 걸림' : penaltyMode === 'last' ? '꼴찌 걸림' : '충돌왕 걸림';
 
@@ -456,6 +457,9 @@ export default function ObstacleRace() {
         <section className={styles.worldCard}>
           <div className={styles.viewportTop}>
             <span>{raceState === 'finished' ? 'FINISH' : raceState === 'racing' ? 'RUN' : 'READY'}</span>
+            <div className={styles.stageMeter} aria-hidden="true">
+              <i style={{ width: `${leaderProgress}%` }} />
+            </div>
             <strong>{Math.round(clamp(cameraX + stageWidth, 0, COURSE_LENGTH))}m / {FINISH_X}m</strong>
           </div>
 
@@ -465,7 +469,15 @@ export default function ObstacleRace() {
             style={{ '--world-height': `${worldHeight}px` }}
             aria-label="장애물 레이스 트랙"
           >
+            <div className={styles.stageVignette} aria-hidden="true" />
             <div className={styles.parallaxClouds} aria-hidden="true" />
+            {raceState === 'idle' && <div className={styles.readyOverlay}>READY</div>}
+            {raceState === 'finished' && resultRunner && (
+              <div className={styles.finishOverlay} style={{ '--runner-color': resultRunner.color }}>
+                <span>RESULT</span>
+                <strong>{resultRunner.name}</strong>
+              </div>
+            )}
             <div
               className={styles.world}
               style={{
@@ -503,6 +515,17 @@ export default function ObstacleRace() {
                   />
                 );
               })}
+
+              {OBSTACLES.map((obstacle) => (
+                <span
+                  key={`${obstacle.id}-marker`}
+                  className={styles.obstacleMarker}
+                  style={{ transform: `translate3d(${obstacle.x + 12}px, ${LANE_START_Y - 46}px, 0)` }}
+                  aria-hidden="true"
+                >
+                  !
+                </span>
+              ))}
 
               {entrants.flatMap((entrant, laneIndex) => {
                 const laneY = getLaneY(laneIndex);
