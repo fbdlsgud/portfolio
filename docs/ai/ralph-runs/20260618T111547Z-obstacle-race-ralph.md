@@ -41,3 +41,39 @@ Verdict: PASS
 ## Final
 
 All Ralph criteria passed in iteration 1. Browser screenshot tooling was not exposed in this session, so visual verification used source-level UI checks plus build, dev-server hot reload, and local route response evidence.
+
+## Post-Feedback Ralph Rerun: World-Coordinate Overhaul
+
+Started: 2026-06-18T12:05:00Z
+
+User feedback superseded the first pass: the runner still read as standing in place, and the requested behavior is a Super Mario-style side-scrolling race where characters actually run along a fixed course and jump obstacles.
+
+### Rerun Criteria
+
+| ID | Criterion | Verification | Status |
+|---|---|---|---|
+| R1 | The race uses real world coordinates instead of percent-only progress. | Inspect `ObstacleRace.jsx` for `COURSE_LENGTH`, `FINISH_X`, runner `x`, obstacle `x`, and `cameraX`. | PASS |
+| R2 | The UI renders a long fixed course with a following camera, fixed obstacles, start/finish gates, and runners moving through that world. | Inspect `ObstacleRace.jsx` and `ObstacleRace.module.css` for `.worldViewport`, `.world`, `.laneStrip`, `.obstacle`, `.finishGate`, and inline `translate3d(${-cameraX}px, 0, 0)`. | PASS |
+| R3 | Runners visibly jump over obstacles or fail into stun states with dynamic motion. | Inspect source for `jumpLift`, `JUMP_DURATION`, `stunUntil`, `impactUntil`, `.runnerJump`, `.runnerStun`, `.impactBurst`, and per-runner transforms. | PASS |
+| R4 | Visual/runtime evidence proves movement is not stationary. | Use bundled Playwright with local Chrome after START and capture world transform, runner transforms, obstacle count, and screenshot. | PASS |
+| R5 | Build, route, and docs are current. | Run `git diff --check`, `npm run build`, curl `/obstacle-race`, and update feature/error/proposed-rule docs. | PASS |
+
+### Rerun Implementation
+
+- Replaced percent-track movement with a pixel course: `COURSE_LENGTH = 2680`, `FINISH_X = 2440`, `START_X = 72`.
+- Rebuilt obstacles as world-positioned objects at `x` values from 360m to 2220m.
+- Rebuilt runner state around `x`, `speed`, `jumpLift`, `jumpStart`, `jumpUntil`, `stunUntil`, `impactUntil`, and `finishedAt`.
+- Added camera following via `cameraX`, easing toward the leader while the world moves underneath the viewport.
+- Replaced the old static lane composition with a side-scrolling world, repeated lane strips, fixed obstacle instances, runner shadows, JUMP/STUN bubbles, impact bursts, and live result cards.
+
+### JUDGE Result - Rerun
+
+| Criterion | Status | Evidence |
+|---|---|---|
+| R1 | PASS | `rg -n "COURSE_LENGTH|FINISH_X|cameraX|jumpLift|runnerJump|runnerStun|worldViewport|obstacleClassMap" src/components/page/games/ObstacleRace.jsx src/components/page/games/ObstacleRace.module.css` found the pixel course constants, camera state, jump lift, world viewport, obstacle mapping, and motion state classes. |
+| R2 | PASS | Source inspection found the long `.world` rendered at `2680px`, `translate3d(${-cameraX}px, 0, 0)`, lane strips at fixed world coordinates, obstacle instances at fixed `obstacle.x`, and a finish gate at `FINISH_X`. |
+| R3 | PASS | Race loop branches into success/failure per obstacle, applies jump arcs through `Math.sin(...)*72`, stuns through `stunUntil`, and renders `.runnerJump`, `.runnerStun`, and `.impactBurst`. |
+| R4 | PASS | Playwright visual QA after START at 2.7s recorded world transform `translate3d(-170.044px, 0px, 0px)`, runner transforms `690.964px`, `604.859px`, `506.44px`, `630.777px`, 32 obstacle nodes, JUMP/STUN text, and screenshot `/private/tmp/obstacle-race-visual-qa.png`. |
+| R5 | PASS | `git diff --check` exited 0. `npm run build` exited 0 with `Compiled successfully`. `curl -I http://127.0.0.1:3000/obstacle-race` returned `HTTP/1.1 200 OK`. Feature log and error/proposed-rule docs were updated. |
+
+Verdict: PASS

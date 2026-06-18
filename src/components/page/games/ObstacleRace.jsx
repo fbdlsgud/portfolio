@@ -3,16 +3,24 @@ import { Link } from 'react-router-dom';
 import styles from './ObstacleRace.module.css';
 
 const MAX_PLAYERS = 7;
-const RUNNER_WIDTH = 72;
-const FINISH_AT = 100;
+const COURSE_LENGTH = 2680;
+const START_X = 72;
+const FINISH_X = 2440;
+const DEFAULT_STAGE_WIDTH = 980;
+const LANE_START_Y = 126;
+const LANE_GAP = 58;
+const JUMP_DURATION = 760;
+const OBSTACLE_TRIGGER_DISTANCE = 96;
+
 const OBSTACLES = [
-  { id: 'brick-1', position: 14, type: 'block' },
-  { id: 'pipe-1', position: 27, type: 'pipe' },
-  { id: 'brick-2', position: 39, type: 'block' },
-  { id: 'spike-1', position: 52, type: 'spike' },
-  { id: 'pipe-2', position: 66, type: 'pipe' },
-  { id: 'brick-3', position: 79, type: 'block' },
-  { id: 'spike-2', position: 90, type: 'spike' },
+  { id: 'brick-1', x: 360, type: 'block', label: '벽돌' },
+  { id: 'pipe-1', x: 610, type: 'pipe', label: '파이프' },
+  { id: 'gap-1', x: 850, type: 'gap', label: '구덩이' },
+  { id: 'spike-1', x: 1120, type: 'spike', label: '가시' },
+  { id: 'brick-2', x: 1390, type: 'block', label: '벽돌' },
+  { id: 'pipe-2', x: 1665, type: 'pipe', label: '파이프' },
+  { id: 'spike-2', x: 1970, type: 'spike', label: '가시' },
+  { id: 'pipe-3', x: 2220, type: 'pipe', label: '파이프' },
 ];
 
 const RUNNER_COLORS = [
@@ -27,6 +35,14 @@ const RUNNER_COLORS = [
 
 const DEFAULT_NAMES = ['레드', '블루', '그린', '옐로', '퍼플', '핑크', '민트'];
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getLaneY(index) {
+  return LANE_START_Y + index * LANE_GAP;
+}
+
 function makeEntrants(count, names) {
   return Array.from({ length: count }, (_, index) => ({
     id: `runner-${index + 1}`,
@@ -39,9 +55,9 @@ function makeEntrants(count, names) {
 function makeInitialRunners(entrants) {
   return entrants.map((entrant, index) => ({
     ...entrant,
-    progress: 0,
-    speed: 7.4 + Math.random() * 2.2 + index * 0.18,
-    jumpChance: 0.66 + Math.random() * 0.2,
+    x: START_X - index * 7,
+    speed: 182 + Math.random() * 42 + index * 4,
+    jumpChance: 0.64 + Math.random() * 0.22,
     obstacleIndex: 0,
     state: 'run',
     stunUntil: 0,
@@ -49,21 +65,27 @@ function makeInitialRunners(entrants) {
     jumpStart: 0,
     stunCount: 0,
     finishedAt: null,
-    lastEvent: '출발 대기',
+    lastEvent: '출발',
     jumpLift: 0,
+    impactUntil: 0,
   }));
 }
 
 function emptyRunners(entrants) {
-  return entrants.map((entrant) => ({
+  return entrants.map((entrant, index) => ({
     ...entrant,
-    progress: 0,
+    x: START_X - index * 7,
     jumpChance: 0.75,
+    obstacleIndex: 0,
     state: 'idle',
+    stunUntil: 0,
+    jumpUntil: 0,
+    jumpStart: 0,
     stunCount: 0,
+    finishedAt: null,
     lastEvent: '출발 대기',
     jumpLift: 0,
-    finishedAt: null,
+    impactUntil: 0,
   }));
 }
 
@@ -89,6 +111,10 @@ function formatTime(seconds) {
   return seconds > 0 ? `${seconds.toFixed(1)}s` : '0.0s';
 }
 
+function getProgress(runner) {
+  return clamp((runner.x / FINISH_X) * 100, 0, 100);
+}
+
 export default function ObstacleRace() {
   const [playerCount, setPlayerCount] = useState(4);
   const [names, setNames] = useState(DEFAULT_NAMES);
@@ -97,6 +123,8 @@ export default function ObstacleRace() {
   const [runners, setRunners] = useState(() => emptyRunners(makeEntrants(4, DEFAULT_NAMES)));
   const [finishOrder, setFinishOrder] = useState([]);
   const [raceClock, setRaceClock] = useState(0);
+  const [stageWidth, setStageWidth] = useState(DEFAULT_STAGE_WIDTH);
+  const [cameraX, setCameraX] = useState(0);
 
   const entrants = useMemo(() => makeEntrants(playerCount, names), [playerCount, names]);
   const runnersRef = useRef(runners);
@@ -104,15 +132,39 @@ export default function ObstacleRace() {
   const rafRef = useRef(0);
   const lastFrameRef = useRef(0);
   const raceStartRef = useRef(0);
+  const cameraRef = useRef(0);
+  const stageRef = useRef(null);
+
+  useEffect(() => {
+    const node = stageRef.current;
+    const updateStageWidth = () => {
+      setStageWidth(node?.clientWidth || DEFAULT_STAGE_WIDTH);
+    };
+
+    updateStageWidth();
+
+    if (!node) return undefined;
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', updateStageWidth);
+      return () => window.removeEventListener('resize', updateStageWidth);
+    }
+
+    const observer = new ResizeObserver(updateStageWidth);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (raceState === 'idle') {
       const idleRunners = emptyRunners(entrants);
       runnersRef.current = idleRunners;
+      finishOrderRef.current = [];
+      cameraRef.current = 0;
       setRunners(idleRunners);
       setFinishOrder([]);
-      finishOrderRef.current = [];
       setRaceClock(0);
+      setCameraX(0);
     }
   }, [entrants, raceState]);
 
@@ -138,11 +190,13 @@ export default function ObstacleRace() {
     const idleRunners = emptyRunners(entrants);
     runnersRef.current = idleRunners;
     finishOrderRef.current = [];
+    cameraRef.current = 0;
     lastFrameRef.current = 0;
     raceStartRef.current = 0;
     setRunners(idleRunners);
     setFinishOrder([]);
     setRaceClock(0);
+    setCameraX(0);
     setRaceState('idle');
   }, [cancelLoop, entrants]);
 
@@ -153,11 +207,13 @@ export default function ObstacleRace() {
     const nextRunners = makeInitialRunners(entrants);
     runnersRef.current = nextRunners;
     finishOrderRef.current = [];
+    cameraRef.current = 0;
     lastFrameRef.current = now;
     raceStartRef.current = now;
     setRunners(nextRunners);
     setFinishOrder([]);
     setRaceClock(0);
+    setCameraX(0);
     setRaceState('racing');
 
     const tick = (timestamp) => {
@@ -167,10 +223,10 @@ export default function ObstacleRace() {
 
       const next = runnersRef.current.map((runner) => {
         if (runner.finishedAt) {
-          return { ...runner, state: 'finish', progress: FINISH_AT, jumpLift: 0 };
+          return { ...runner, state: 'finish', x: FINISH_X, jumpLift: 0 };
         }
 
-        let progress = runner.progress;
+        let x = runner.x;
         let state = runner.state;
         let stunUntil = runner.stunUntil;
         let jumpUntil = runner.jumpUntil;
@@ -179,46 +235,50 @@ export default function ObstacleRace() {
         let obstacleIndex = runner.obstacleIndex;
         let lastEvent = runner.lastEvent;
         let jumpLift = 0;
+        let impactUntil = runner.impactUntil;
 
         if (timestamp < stunUntil) {
           state = 'stun';
-          progress += runner.speed * 0.12 * deltaSeconds;
+          x += runner.speed * 0.12 * deltaSeconds;
         } else {
           const jumping = timestamp < jumpUntil;
           state = jumping ? 'jump' : 'run';
 
           if (jumping) {
-            const jumpRatio = Math.min(1, Math.max(0, (timestamp - jumpStart) / Math.max(1, jumpUntil - jumpStart)));
-            jumpLift = Math.sin(jumpRatio * Math.PI) * 34;
+            const jumpRatio = clamp((timestamp - jumpStart) / Math.max(1, jumpUntil - jumpStart), 0, 1);
+            jumpLift = Math.sin(jumpRatio * Math.PI) * 72;
+            x += runner.speed * 1.08 * deltaSeconds;
+          } else {
+            x += runner.speed * deltaSeconds;
           }
 
-          progress += runner.speed * (jumping ? 1.08 : 1) * deltaSeconds;
-
           const obstacle = OBSTACLES[obstacleIndex];
-          if (obstacle && progress >= obstacle.position - 1.3) {
+          if (obstacle && x >= obstacle.x - OBSTACLE_TRIGGER_DISTANCE) {
             const success = Math.random() < runner.jumpChance;
             if (success) {
               state = 'jump';
               jumpStart = timestamp;
-              jumpUntil = timestamp + 620;
-              lastEvent = `${Math.round(obstacle.position)}% 점프 성공`;
-              progress += 0.65;
+              jumpUntil = timestamp + JUMP_DURATION;
+              lastEvent = `${obstacle.label} 점프`;
+              x += 10;
             } else {
               state = 'stun';
-              stunUntil = timestamp + 820 + Math.random() * 520;
+              stunUntil = timestamp + 920 + Math.random() * 660;
               stunCount += 1;
-              lastEvent = `${Math.round(obstacle.position)}% 장애물 충돌`;
-              progress = Math.max(0, progress - 0.9);
+              impactUntil = timestamp + 430;
+              lastEvent = `${obstacle.label} 충돌`;
+              x = Math.max(START_X, x - 24);
             }
             obstacleIndex += 1;
           }
         }
 
         let finishedAt = runner.finishedAt;
-        if (progress >= FINISH_AT) {
-          progress = FINISH_AT;
+        if (x >= FINISH_X) {
+          x = FINISH_X;
           state = 'finish';
           lastEvent = '골인';
+          jumpLift = 0;
           finishedAt = timestamp;
           if (!finishOrderRef.current.includes(runner.id)) {
             finishOrderRef.current = [...finishOrderRef.current, runner.id];
@@ -227,7 +287,7 @@ export default function ObstacleRace() {
 
         return {
           ...runner,
-          progress,
+          x,
           state,
           stunUntil,
           jumpUntil,
@@ -236,14 +296,22 @@ export default function ObstacleRace() {
           obstacleIndex,
           lastEvent,
           jumpLift,
+          impactUntil,
           finishedAt,
         };
       });
+
+      const leaderX = Math.max(...next.map((runner) => runner.x));
+      const maxCamera = Math.max(0, COURSE_LENGTH - stageWidth);
+      const desiredCamera = clamp(leaderX - stageWidth * 0.42, 0, maxCamera);
+      const easedCamera = cameraRef.current + (desiredCamera - cameraRef.current) * 0.18;
+      cameraRef.current = Math.abs(easedCamera - desiredCamera) < 0.5 ? desiredCamera : easedCamera;
 
       runnersRef.current = next;
       setRunners(next);
       setFinishOrder([...finishOrderRef.current]);
       setRaceClock((timestamp - raceStartRef.current) / 1000);
+      setCameraX(cameraRef.current);
 
       if (finishOrderRef.current.length >= next.length) {
         setRaceState('finished');
@@ -255,65 +323,94 @@ export default function ObstacleRace() {
     };
 
     rafRef.current = requestAnimationFrame(tick);
-  }, [cancelLoop, entrants]);
+  }, [cancelLoop, entrants, stageWidth]);
 
   const sortedRunners = useMemo(() => {
-    return [...runners].sort((a, b) => b.progress - a.progress);
-  }, [runners]);
+    return [...runners].sort((a, b) => {
+      const aOrder = finishOrder.indexOf(a.id);
+      const bOrder = finishOrder.indexOf(b.id);
+      if (aOrder !== -1 || bOrder !== -1) {
+        if (aOrder === -1) return 1;
+        if (bOrder === -1) return -1;
+        return aOrder - bOrder;
+      }
+      return b.x - a.x;
+    });
+  }, [finishOrder, runners]);
 
-  const caughtRunner = raceState === 'finished' ? getCaughtRunner(penaltyMode, finishOrder, runners) : null;
+  const resultRunner = raceState === 'finished' ? getCaughtRunner(penaltyMode, finishOrder, runners) : null;
   const leader = sortedRunners[0];
-  const isLocked = raceState === 'racing';
+  const worldHeight = LANE_START_Y + entrants.length * LANE_GAP + 92;
+  const leaderProgress = leader ? Math.round(getProgress(leader)) : 0;
+  const finishLabel = penaltyMode === 'first' ? '1등 걸림' : penaltyMode === 'last' ? '꼴찌 걸림' : '충돌왕 걸림';
+
+  const obstacleClassMap = {
+    block: styles.obstacleBlock,
+    pipe: styles.obstaclePipe,
+    gap: styles.obstacleGap,
+    spike: styles.obstacleSpike,
+  };
+
+  const stateClassMap = {
+    idle: styles.runnerIdle,
+    run: styles.runnerRun,
+    jump: styles.runnerJump,
+    stun: styles.runnerStun,
+    finish: styles.runnerFinish,
+  };
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.clouds} aria-hidden="true" />
-      <section className={styles.shell} aria-label="점프 장애물 내기 레이스">
+      <main className={styles.shell}>
         <div className={styles.topBar}>
-          <Link to="/games" className={styles.backLink}>게임 목록</Link>
-          <div className={styles.titleBlock}>
-            <span>PARTY RUNNER</span>
+          <Link className={styles.backLink} to="/games">
+            게임 목록
+          </Link>
+          <section className={styles.titleBlock}>
+            <span>PARTY BET</span>
             <h1>점프 장애물 레이스</h1>
-          </div>
-          <button type="button" className={styles.resetButton} onClick={resetRace} disabled={isLocked}>
+          </section>
+          <button className={styles.resetButton} type="button" onClick={resetRace} disabled={raceState === 'racing'}>
             리셋
           </button>
         </div>
 
-        <div className={styles.setupPanel} aria-label="레이스 설정">
+        <section className={styles.setupPanel}>
           <div className={styles.controlGroup}>
             <span className={styles.label}>참가 인원</span>
-            <div className={styles.countGrid} role="group" aria-label="참가 인원 선택">
-              {Array.from({ length: MAX_PLAYERS }, (_, index) => index + 1).map((count) => (
-                <button
-                  key={count}
-                  type="button"
-                  className={count === playerCount ? styles.countActive : styles.countButton}
-                  onClick={() => setPlayerCount(count)}
-                  disabled={isLocked}
-                  aria-pressed={count === playerCount}
-                >
-                  {count}
-                </button>
-              ))}
+            <div className={styles.countGrid}>
+              {Array.from({ length: MAX_PLAYERS }, (_, index) => {
+                const count = index + 1;
+                return (
+                  <button
+                    key={count}
+                    type="button"
+                    className={count === playerCount ? styles.countActive : styles.countButton}
+                    onClick={() => setPlayerCount(count)}
+                    disabled={raceState === 'racing'}
+                  >
+                    {count}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           <div className={styles.controlGroup}>
-            <span className={styles.label}>벌칙 조건</span>
-            <div className={styles.modeGrid} role="group" aria-label="벌칙 조건 선택">
+            <span className={styles.label}>걸리는 조건</span>
+            <div className={styles.modeGrid}>
               {[
-                ['stuns', '스턴 최다'],
+                ['stuns', '충돌왕'],
                 ['first', '1등'],
-                ['last', '꼴등'],
-              ].map(([value, label]) => (
+                ['last', '꼴찌'],
+              ].map(([mode, label]) => (
                 <button
-                  key={value}
+                  key={mode}
                   type="button"
-                  className={penaltyMode === value ? styles.modeActive : styles.modeButton}
-                  onClick={() => setPenaltyMode(value)}
-                  disabled={isLocked}
-                  aria-pressed={penaltyMode === value}
+                  className={penaltyMode === mode ? styles.modeActive : styles.modeButton}
+                  onClick={() => setPenaltyMode(mode)}
+                  disabled={raceState === 'racing'}
                 >
                   {label}
                 </button>
@@ -321,109 +418,186 @@ export default function ObstacleRace() {
             </div>
           </div>
 
-          <button type="button" className={styles.startButton} onClick={startRace} disabled={isLocked}>
-            {raceState === 'racing' ? '레이스 중' : raceState === 'finished' ? '다시 달리기' : '출발'}
+          <button className={styles.startButton} type="button" onClick={startRace} disabled={raceState === 'racing'}>
+            {raceState === 'racing' ? '레이스 중' : 'START'}
           </button>
-        </div>
+        </section>
 
-        <div className={styles.nameGrid} aria-label="참가자 이름">
+        <section className={styles.nameGrid} aria-label="참가자 이름">
           {entrants.map((entrant, index) => (
             <label key={entrant.id} className={styles.nameSlot} style={{ '--runner-color': entrant.color }}>
               <span>{entrant.lane}P</span>
               <input
                 value={names[index]}
-                maxLength={8}
+                maxLength={6}
                 onChange={(event) => updateName(index, event.target.value)}
-                disabled={isLocked}
+                disabled={raceState === 'racing'}
                 aria-label={`${entrant.lane}번 참가자 이름`}
               />
             </label>
           ))}
-        </div>
+        </section>
 
         <section className={styles.scoreboard} aria-live="polite">
           <div>
-            <span>TIME</span>
+            <span>선두</span>
+            <strong>{leader ? `${leader.name} ${leaderProgress}%` : '대기'}</strong>
+          </div>
+          <div>
+            <span>기록</span>
             <strong>{formatTime(raceClock)}</strong>
           </div>
           <div>
-            <span>LEADER</span>
-            <strong style={leader ? { color: leader.color } : undefined}>{leader?.name || '대기'}</strong>
-          </div>
-          <div>
-            <span>RULE</span>
-            <strong>{penaltyMode === 'stuns' ? '스턴 최다' : penaltyMode === 'first' ? '1등' : '꼴등'}</strong>
+            <span>조건</span>
+            <strong>{finishLabel}</strong>
           </div>
         </section>
 
-        <section className={`${styles.stage} ${raceState === 'racing' ? styles.stageRunning : ''}`} aria-label="횡스크롤 레이스 맵">
-          <div className={styles.stageBackdrop} aria-hidden="true">
-            <span className={styles.hillOne} />
-            <span className={styles.hillTwo} />
-            <span className={styles.castle} />
+        <section className={styles.worldCard}>
+          <div className={styles.viewportTop}>
+            <span>{raceState === 'finished' ? 'FINISH' : raceState === 'racing' ? 'RUN' : 'READY'}</span>
+            <strong>{Math.round(clamp(cameraX + stageWidth, 0, COURSE_LENGTH))}m / {FINISH_X}m</strong>
           </div>
 
-          <div className={styles.courseHud}>
-            <span>START</span>
-            <span>OBSTACLE ZONE</span>
-            <span>GOAL</span>
-          </div>
+          <div
+            ref={stageRef}
+            className={styles.worldViewport}
+            style={{ '--world-height': `${worldHeight}px` }}
+            aria-label="장애물 레이스 트랙"
+          >
+            <div className={styles.parallaxClouds} aria-hidden="true" />
+            <div
+              className={styles.world}
+              style={{
+                width: `${COURSE_LENGTH}px`,
+                height: `${worldHeight}px`,
+                transform: `translate3d(${-cameraX}px, 0, 0)`,
+              }}
+            >
+              <div className={styles.distantHills} aria-hidden="true" />
+              <div className={styles.castle} style={{ transform: `translate3d(${FINISH_X + 92}px, 44px, 0)` }} aria-hidden="true" />
+              <div className={styles.startGate} style={{ transform: `translate3d(${START_X - 30}px, ${LANE_START_Y - 70}px, 0)` }}>
+                START
+              </div>
+              <div
+                className={styles.finishGate}
+                style={{
+                  height: `${worldHeight - LANE_START_Y + 50}px`,
+                  transform: `translate3d(${FINISH_X}px, ${LANE_START_Y - 78}px, 0)`,
+                }}
+              >
+                GOAL
+              </div>
 
-          <div className={styles.lanes}>
-            {runners.map((runner) => {
-              const rank = finishOrder.indexOf(runner.id) + 1;
-              const runnerOffset = (runner.progress / 100) * RUNNER_WIDTH;
-              const runnerX = `calc(${runner.progress}% - ${runnerOffset}px)`;
-              const isLeader = raceState === 'racing' && leader?.id === runner.id;
-              const isCaught = caughtRunner?.id === runner.id;
+              {entrants.map((entrant, index) => {
+                const laneY = getLaneY(index);
+                return (
+                  <div
+                    key={entrant.id}
+                    className={styles.laneStrip}
+                    style={{
+                      width: `${COURSE_LENGTH}px`,
+                      transform: `translate3d(0, ${laneY + 42}px, 0)`,
+                    }}
+                    aria-hidden="true"
+                  />
+                );
+              })}
 
-              return (
-                <div
-                  key={runner.id}
-                  className={[
-                    styles.lane,
-                    isLeader ? styles.leaderLane : '',
-                    isCaught ? styles.caughtLane : '',
-                  ].filter(Boolean).join(' ')}
-                  style={{ '--runner-color': runner.color, '--runner-cap': runner.cap }}
-                >
-                  <div className={styles.laneLabel}>
-                    <strong>{runner.name}</strong>
-                    <span>{rank ? `${rank}위` : `${Math.round(runner.progress)}%`}</span>
-                  </div>
+              {entrants.flatMap((entrant, laneIndex) => {
+                const laneY = getLaneY(laneIndex);
+                return OBSTACLES.map((obstacle) => (
+                  <span
+                    key={`${entrant.id}-${obstacle.id}`}
+                    className={[styles.obstacle, obstacleClassMap[obstacle.type]].join(' ')}
+                    style={{
+                      transform: `translate3d(${obstacle.x}px, ${laneY + 10}px, 0)`,
+                    }}
+                    aria-hidden="true"
+                  >
+                    <i />
+                  </span>
+                ));
+              })}
 
-                  <div className={styles.track}>
-                    <div className={styles.progressLine} style={{ width: `${runner.progress}%` }} />
-                    {OBSTACLES.map((obstacle) => (
-                      <span
-                        key={obstacle.id}
-                        className={`${styles.obstacle} ${styles[obstacle.type]}`}
-                        style={{ left: `${obstacle.position}%` }}
-                        aria-hidden="true"
-                      />
-                    ))}
-                    <span className={styles.finishFlag} aria-hidden="true" />
-                    <div
-                      className={[
-                        styles.runner,
-                        styles[`runner-${runner.state}`],
-                      ].join(' ')}
-                      style={{
-                        '--runner-x': runnerX,
-                        '--runner-y': `-${runner.jumpLift}px`,
-                      }}
-                    >
-                      <span className={styles.runnerBody}>
-                        <span className={styles.runnerFace} />
+              {runners.map((runner, index) => {
+                const laneY = getLaneY(index);
+                return (
+                  <span
+                    key={`${runner.id}-shadow`}
+                    className={styles.runnerGroundShadow}
+                    style={{
+                      opacity: runner.state === 'jump' ? 0.28 : 0.54,
+                      transform: `translate3d(${runner.x + 12}px, ${laneY + 47}px, 0) scaleX(${runner.state === 'jump' ? 0.72 : 1})`,
+                    }}
+                    aria-hidden="true"
+                  />
+                );
+              })}
+
+              {runners.map((runner, index) => {
+                const laneY = getLaneY(index);
+                const progress = getProgress(runner);
+                const isImpact = runner.impactUntil > performance.now();
+                return (
+                  <div
+                    key={runner.id}
+                    className={[styles.runner, stateClassMap[runner.state]].filter(Boolean).join(' ')}
+                    style={{
+                      '--runner-color': runner.color,
+                      '--runner-cap': runner.cap,
+                      transform: `translate3d(${runner.x}px, ${laneY - runner.jumpLift}px, 0)`,
+                    }}
+                  >
+                    <span className={styles.runnerName}>{runner.name}</span>
+                    <span className={styles.runnerBubble}>
+                      {runner.state === 'jump' ? 'JUMP!' : runner.state === 'stun' ? 'STUN!' : runner.state === 'finish' ? 'GOAL!' : runner.lastEvent}
+                    </span>
+                    {isImpact && <span className={styles.impactBurst} aria-hidden="true" />}
+                    <span className={styles.runnerBody} aria-hidden="true">
+                      <span className={styles.runnerCap} />
+                      <span className={styles.runnerFace}>
+                        <i />
                       </span>
-                      <span className={styles.runnerFeet} />
-                      {runner.state === 'stun' && <span className={styles.stunStars} aria-hidden="true">STUN</span>}
-                    </div>
+                      <span className={styles.runnerPack}>{runner.lane}</span>
+                      <span className={styles.footLeft} />
+                      <span className={styles.footRight} />
+                    </span>
+                    <span className={styles.runnerMeter}>{Math.round(progress)}%</span>
                   </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
-                  <div className={styles.laneStats}>
-                    <span>스턴 {runner.stunCount}</span>
-                    <small>{runner.lastEvent}</small>
+        <section className={styles.livePanel}>
+          <div className={styles.rankingPanel}>
+            <span className={styles.panelTitle}>순위</span>
+            {sortedRunners.map((runner, index) => (
+              <div key={runner.id} className={styles.rankRow} style={{ '--runner-color': runner.color }}>
+                <strong>{index + 1}</strong>
+                <span>{runner.name}</span>
+                <em>{runner.lastEvent}</em>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.statusGrid}>
+            {runners.map((runner) => {
+              const progress = getProgress(runner);
+              return (
+                <div key={runner.id} className={styles.statusCard} style={{ '--runner-color': runner.color }}>
+                  <div className={styles.statusHead}>
+                    <strong>{runner.name}</strong>
+                    <span>{Math.round(runner.x)}m</span>
+                  </div>
+                  <div className={styles.progressTrack}>
+                    <span style={{ width: `${progress}%` }} />
+                  </div>
+                  <div className={styles.statusMeta}>
+                    <span>충돌 {runner.stunCount}</span>
+                    <span>{runner.lastEvent}</span>
                   </div>
                 </div>
               );
@@ -431,37 +605,20 @@ export default function ObstacleRace() {
           </div>
         </section>
 
-        {raceState === 'finished' && caughtRunner && (
-          <section className={styles.resultPanel} aria-live="assertive">
-            <div>
-              <span className={styles.resultKicker}>걸린 사람</span>
-              <h2 style={{ color: caughtRunner.color }}>{caughtRunner.name}</h2>
-              <p>
-                {penaltyMode === 'stuns'
-                  ? `스턴 ${caughtRunner.stunCount}회로 가장 많이 막혔습니다.`
-                  : penaltyMode === 'first'
-                    ? '가장 먼저 도착했습니다.'
-                    : '가장 늦게 도착했습니다.'}
-              </p>
-            </div>
-            <ol className={styles.rankList}>
-              {finishOrder.map((id, index) => {
-                const runner = runners.find((item) => item.id === id);
-                return runner ? (
-                  <li key={id}>
-                    <span>{index + 1}위</span>
-                    <strong style={{ color: runner.color }}>{runner.name}</strong>
-                    <small>스턴 {runner.stunCount}</small>
-                  </li>
-                ) : null;
-              })}
-            </ol>
-            <button type="button" className={styles.startButton} onClick={startRace}>
-              한 판 더
-            </button>
+        {resultRunner && (
+          <section className={styles.resultPanel} style={{ '--runner-color': resultRunner.color }}>
+            <span>RESULT</span>
+            <strong>{resultRunner.name}</strong>
+            <p>
+              {penaltyMode === 'stuns'
+                ? `충돌 ${resultRunner.stunCount}회로 걸렸습니다.`
+                : penaltyMode === 'first'
+                  ? '가장 먼저 골인해서 걸렸습니다.'
+                  : '가장 늦게 골인해서 걸렸습니다.'}
+            </p>
           </section>
         )}
-      </section>
-    </main>
+      </main>
+    </div>
   );
 }
