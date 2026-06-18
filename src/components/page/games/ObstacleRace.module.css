@@ -1,0 +1,831 @@
+.page {
+  position: fixed;
+  inset: 0;
+  min-height: 100vh;
+  overflow: auto;
+  background:
+    linear-gradient(180deg, #6ec5ff 0%, #9de0ff 34%, #6ab95a 35%, #4d9f46 100%);
+  color: #172033;
+  font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.clouds {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 260px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 10% 38%, rgba(248, 253, 255, 0.9) 0 28px, transparent 29px),
+    radial-gradient(circle at 15% 34%, rgba(248, 253, 255, 0.82) 0 36px, transparent 37px),
+    radial-gradient(circle at 70% 26%, rgba(248, 253, 255, 0.86) 0 30px, transparent 31px),
+    radial-gradient(circle at 76% 30%, rgba(248, 253, 255, 0.78) 0 42px, transparent 43px);
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, calc(100% - 28px));
+  margin: 18px auto 34px;
+  padding: 12px 18px 28px;
+}
+
+.topBar {
+  display: grid;
+  grid-template-columns: 120px 1fr 92px;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.backLink,
+.resetButton,
+.startButton,
+.countButton,
+.countActive,
+.modeButton,
+.modeActive {
+  border: 3px solid #18202f;
+  border-radius: 8px;
+  box-shadow: 0 4px 0 #18202f;
+  cursor: pointer;
+  font-weight: 900;
+  text-decoration: none;
+  transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 140ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.backLink,
+.resetButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  background: #fff4cf;
+  color: #172033;
+  font-size: 13px;
+}
+
+.resetButton:disabled,
+.countButton:disabled,
+.countActive:disabled,
+.modeButton:disabled,
+.modeActive:disabled,
+.startButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.backLink:active,
+.resetButton:active,
+.startButton:active,
+.countButton:active,
+.countActive:active,
+.modeButton:active,
+.modeActive:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #18202f;
+}
+
+.titleBlock {
+  position: relative;
+  padding: 14px 18px 16px;
+  border: 5px solid #1b1f2a;
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, #8b4c22 0 24%, #53321c 24% 28%, #fff0bf 28% 100%);
+  box-shadow: 0 7px 0 #1b1f2a, inset 0 0 0 3px rgba(255, 209, 102, 0.72);
+  text-align: center;
+}
+
+.titleBlock span {
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border: 2px solid #1b1f2a;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff8db;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.titleBlock h1 {
+  margin: 8px 0 0;
+  color: #1a5f13;
+  font-size: 28px;
+  line-height: 1.2;
+  text-shadow: 2px 2px 0 #d6f77a;
+}
+
+.setupPanel {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(300px, 1.1fr) 142px;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 4px solid #1b2b20;
+  border-radius: 12px;
+  background: rgba(255, 244, 207, 0.96);
+  box-shadow: 0 6px 0 rgba(27, 43, 32, 0.92);
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  color: #2a3a24;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.countGrid,
+.modeGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.countButton,
+.countActive {
+  width: 34px;
+  height: 34px;
+  background: #fffaf0;
+  color: #172033;
+}
+
+.modeButton,
+.modeActive {
+  min-height: 34px;
+  padding: 0 12px;
+  background: #fffaf0;
+  color: #172033;
+}
+
+.countActive,
+.modeActive {
+  background: #ffd447;
+}
+
+.startButton {
+  min-height: 44px;
+  background: #ef4444;
+  color: #fff8db;
+  font-size: 16px;
+}
+
+.nameGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.nameSlot {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+  padding: 7px;
+  border: 3px solid #1b2b20;
+  border-radius: 10px;
+  background: rgba(255, 250, 240, 0.92);
+  box-shadow: inset 0 -4px 0 rgba(27, 43, 32, 0.08);
+}
+
+.nameSlot span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #172033;
+  border-radius: 50%;
+  background: var(--runner-color);
+  color: #fffaf0;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.nameSlot input {
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  border: 2px solid rgba(23, 32, 51, 0.28);
+  border-radius: 7px;
+  background: #fffaf0;
+  color: #172033;
+  font-weight: 900;
+  text-align: center;
+}
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.scoreboard div {
+  min-height: 56px;
+  padding: 9px 12px;
+  border: 4px solid #172033;
+  border-radius: 10px;
+  background: #fffaf0;
+  box-shadow: 0 5px 0 #172033;
+}
+
+.scoreboard span {
+  display: block;
+  color: #59644d;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.scoreboard strong {
+  display: block;
+  margin-top: 4px;
+  color: #172033;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  min-height: 560px;
+  padding: 18px 16px 20px;
+  border: 5px solid #172033;
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(109, 194, 255, 0.94) 0 26%, rgba(134, 217, 255, 0.86) 26% 44%, rgba(94, 166, 69, 0.9) 44% 100%);
+  box-shadow: 0 8px 0 #172033;
+}
+
+.stageBackdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hillOne,
+.hillTwo {
+  position: absolute;
+  bottom: 98px;
+  border: 4px solid rgba(23, 32, 51, 0.2);
+  border-bottom: 0;
+  border-radius: 120px 120px 0 0;
+  background: #7ad64f;
+}
+
+.hillOne {
+  left: 48px;
+  width: 180px;
+  height: 86px;
+}
+
+.hillTwo {
+  right: 190px;
+  width: 230px;
+  height: 112px;
+  background: #5fbf48;
+}
+
+.castle {
+  position: absolute;
+  right: 26px;
+  bottom: 84px;
+  width: 74px;
+  height: 76px;
+  border: 4px solid #172033;
+  background:
+    linear-gradient(90deg, transparent 0 18px, #172033 18px 22px, transparent 22px 52px, #172033 52px 56px, transparent 56px),
+    linear-gradient(180deg, #d7a15f 0 62%, #9f6232 62% 100%);
+  box-shadow: inset 0 8px 0 rgba(255, 244, 207, 0.28);
+}
+
+.castle::before {
+  position: absolute;
+  left: -8px;
+  top: -30px;
+  width: 82px;
+  height: 30px;
+  background:
+    linear-gradient(90deg, #a94f2a 0 18px, transparent 18px 26px, #a94f2a 26px 44px, transparent 44px 52px, #a94f2a 52px 70px);
+  content: "";
+}
+
+.courseHud {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 90px 1fr 90px;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: #172033;
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.courseHud span {
+  min-height: 26px;
+  padding: 5px 8px;
+  border: 3px solid #172033;
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.92);
+}
+
+.lanes {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.lane {
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr) 138px;
+  gap: 9px;
+  align-items: center;
+  min-height: 64px;
+  padding: 5px;
+  border-radius: 12px;
+  background: rgba(255, 250, 240, 0.28);
+}
+
+.leaderLane {
+  background: rgba(255, 212, 71, 0.26);
+  box-shadow: inset 0 0 0 3px rgba(255, 212, 71, 0.35);
+}
+
+.caughtLane {
+  background: rgba(239, 68, 68, 0.18);
+  box-shadow: inset 0 0 0 3px rgba(239, 68, 68, 0.32);
+}
+
+.laneLabel {
+  min-width: 0;
+  padding: 7px 8px;
+  border: 3px solid #172033;
+  border-radius: 10px;
+  background: #fffaf0;
+  box-shadow: 0 3px 0 #172033;
+}
+
+.laneLabel strong,
+.laneLabel span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.laneLabel strong {
+  color: var(--runner-color);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.laneLabel span {
+  margin-top: 2px;
+  color: #59644d;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.track {
+  position: relative;
+  height: 58px;
+  border: 4px solid #172033;
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, transparent 0 25px, rgba(117, 76, 37, 0.16) 25px 33px, transparent 33px),
+    repeating-linear-gradient(90deg, #c57a35 0 28px, #a85f2b 28px 56px);
+  box-shadow: inset 0 7px 0 rgba(255, 221, 120, 0.3);
+}
+
+.stageRunning .track::after {
+  position: absolute;
+  inset: 33px 0 0;
+  background: repeating-linear-gradient(90deg, rgba(255, 250, 240, 0.3) 0 18px, transparent 18px 58px);
+  animation: groundTick 520ms linear infinite;
+  content: "";
+}
+
+.progressLine {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 250, 240, 0.82), rgba(255, 212, 71, 0.72));
+  transition: width 100ms linear;
+}
+
+.obstacle {
+  position: absolute;
+  bottom: 10px;
+  z-index: 2;
+  transform: translateX(-50%);
+}
+
+.block {
+  width: 22px;
+  height: 22px;
+  border: 3px solid #172033;
+  background:
+    linear-gradient(135deg, rgba(255, 244, 207, 0.5) 0 20%, transparent 21%),
+    #d97728;
+  box-shadow: 0 3px 0 #172033;
+}
+
+.pipe {
+  width: 24px;
+  height: 30px;
+  border: 3px solid #172033;
+  border-radius: 5px 5px 0 0;
+  background:
+    linear-gradient(90deg, rgba(255, 250, 240, 0.24), transparent 42%),
+    #16a34a;
+  box-shadow: 0 3px 0 #172033;
+}
+
+.pipe::before {
+  position: absolute;
+  left: -7px;
+  top: -10px;
+  width: 32px;
+  height: 11px;
+  border: 3px solid #172033;
+  border-radius: 5px;
+  background: #22c55e;
+  content: "";
+}
+
+.spike {
+  bottom: 9px;
+  width: 28px;
+  height: 24px;
+  background:
+    linear-gradient(135deg, transparent 0 48%, #172033 49% 53%, transparent 54%),
+    linear-gradient(45deg, transparent 0 48%, #172033 49% 53%, transparent 54%),
+    linear-gradient(135deg, transparent 0 50%, #f8fafc 51% 100%);
+  clip-path: polygon(0 100%, 18% 35%, 35% 100%, 52% 28%, 70% 100%, 86% 36%, 100% 100%);
+}
+
+.finishFlag {
+  position: absolute;
+  right: 12px;
+  bottom: 7px;
+  z-index: 1;
+  width: 20px;
+  height: 48px;
+  border-left: 4px solid #172033;
+}
+
+.finishFlag::before {
+  position: absolute;
+  top: 0;
+  left: 3px;
+  width: 25px;
+  height: 19px;
+  border: 3px solid #172033;
+  background:
+    linear-gradient(45deg, #172033 25%, transparent 25% 50%, #172033 50% 75%, transparent 75%),
+    #fffaf0;
+  background-size: 9px 9px;
+  content: "";
+}
+
+.runner {
+  position: absolute;
+  left: 0;
+  bottom: 11px;
+  z-index: 3;
+  width: 72px;
+  height: 46px;
+  transform: translate3d(var(--runner-x, 0px), var(--runner-y, 0px), 0);
+  transition: transform 100ms linear, filter 120ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.runnerBody {
+  position: absolute;
+  left: 12px;
+  bottom: 8px;
+  width: 40px;
+  height: 31px;
+  border: 4px solid #172033;
+  border-radius: 12px 12px 9px 9px;
+  background:
+    linear-gradient(180deg, var(--runner-cap) 0 38%, var(--runner-color) 38% 100%);
+  box-shadow: inset -5px -4px 0 rgba(23, 32, 51, 0.16);
+}
+
+.runnerBody::before {
+  position: absolute;
+  left: 3px;
+  top: -13px;
+  width: 30px;
+  height: 14px;
+  border: 4px solid #172033;
+  border-bottom: 0;
+  border-radius: 14px 14px 0 0;
+  background: var(--runner-color);
+  content: "";
+}
+
+.runnerFace {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #172033;
+  box-shadow: 15px 0 0 #172033;
+}
+
+.runnerFeet {
+  position: absolute;
+  left: 15px;
+  bottom: 2px;
+  width: 14px;
+  height: 7px;
+  border: 3px solid #172033;
+  border-radius: 8px;
+  background: #fffaf0;
+  box-shadow: 23px 0 0 -3px #fffaf0, 23px 0 0 0 #172033;
+}
+
+.runner-run .runnerFeet {
+  animation: runFeet 180ms steps(2, end) infinite;
+}
+
+.runner-jump {
+  filter: drop-shadow(0 10px 0 rgba(23, 32, 51, 0.12));
+}
+
+.runner-jump .runnerBody {
+  transform: rotate(-7deg);
+}
+
+.runner-stun {
+  animation: stunShake 110ms linear infinite;
+  filter: saturate(0.72);
+}
+
+.runner-finish {
+  filter: drop-shadow(0 0 10px rgba(255, 212, 71, 0.85));
+}
+
+.stunStars {
+  position: absolute;
+  left: 2px;
+  top: -24px;
+  min-width: 52px;
+  padding: 2px 5px;
+  border: 2px solid #172033;
+  border-radius: 999px;
+  background: #ffd447;
+  color: #172033;
+  font-size: 10px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.laneStats {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 3px solid #172033;
+  border-radius: 10px;
+  background: #fffaf0;
+  box-shadow: 0 3px 0 #172033;
+}
+
+.laneStats span,
+.laneStats small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 900;
+}
+
+.laneStats span {
+  color: #172033;
+  font-size: 13px;
+}
+
+.laneStats small {
+  color: #59644d;
+  font-size: 11px;
+}
+
+.resultPanel {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) minmax(260px, 1.1fr) 132px;
+  gap: 14px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px;
+  border: 5px solid #172033;
+  border-radius: 14px;
+  background: #fffaf0;
+  box-shadow: 0 7px 0 #172033;
+}
+
+.resultKicker {
+  color: #59644d;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.resultPanel h2 {
+  margin: 4px 0;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.resultPanel p {
+  margin: 0;
+  color: #26324a;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.rankList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rankList li {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 58px;
+  gap: 6px;
+  align-items: center;
+  min-height: 30px;
+  padding: 4px 6px;
+  border: 2px solid rgba(23, 32, 51, 0.28);
+  border-radius: 7px;
+  font-weight: 900;
+}
+
+.rankList strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rankList span,
+.rankList small {
+  color: #59644d;
+  font-size: 11px;
+}
+
+@keyframes runFeet {
+  from {
+    transform: translateX(-2px);
+  }
+  to {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes stunShake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: -4px 0;
+  }
+}
+
+@keyframes groundTick {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-58px);
+  }
+}
+
+@media (max-width: 960px) {
+  .shell {
+    width: min(100% - 18px, 760px);
+    padding: 8px 8px 24px;
+  }
+
+  .topBar,
+  .setupPanel,
+  .scoreboard,
+  .resultPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .titleBlock h1 {
+    font-size: 22px;
+  }
+
+  .nameGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lane {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .track {
+    height: 64px;
+  }
+
+  .laneStats {
+    grid-template-columns: 84px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .shell {
+    width: min(100% - 12px, 520px);
+    margin-top: 8px;
+  }
+
+  .backLink,
+  .resetButton {
+    min-height: 34px;
+  }
+
+  .titleBlock {
+    padding: 10px;
+  }
+
+  .titleBlock h1 {
+    font-size: 18px;
+  }
+
+  .setupPanel {
+    padding: 10px;
+  }
+
+  .nameGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .stage {
+    min-height: 520px;
+    padding: 12px 8px;
+  }
+
+  .courseHud {
+    grid-template-columns: 1fr;
+  }
+
+  .runner {
+    width: 62px;
+  }
+
+  .runnerBody {
+    left: 8px;
+    transform: scale(0.88);
+    transform-origin: left bottom;
+  }
+
+  .rankList {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stageRunning .track::after,
+  .runner-run .runnerFeet,
+  .runner-stun {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .runner,
+  .progressLine,
+  .backLink,
+  .resetButton,
+  .startButton,
+  .countButton,
+  .countActive,
+  .modeButton,
+  .modeActive {
+    transition-duration: 0.01ms !important;
+  }
+}

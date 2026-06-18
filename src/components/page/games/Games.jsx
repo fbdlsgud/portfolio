@@ -21,6 +21,15 @@ const GAMES = [
     icon: "🚀",
     href: "/dodge",
   },
+  {
+    id: "obstacle-race",
+    title: "Obstacle Race",
+    description: "1명부터 7명까지 자동으로 달리며 장애물을 점프하거나 실패해 스턴되는 내기용 횡스크롤 레이스입니다.",
+    tags: ["Party", "Runner", "Betting"],
+    badge: "New",
+    icon: "🏁",
+    href: "/obstacle-race",
+  },
 ];
 
 const Games = () => {

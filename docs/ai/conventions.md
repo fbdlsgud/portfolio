@@ -11,19 +11,23 @@
 
 ### Confirmed Features
 
-- 
+- Party betting mini-game direction: 1-7 players race on one horizontal runner map, Super Mario-style, where each character automatically runs and probabilistically jumps over obstacles or fails, causing a short stun.
 
 ### Suggested MVP Additions
 
-- 
+- Player setup: choose 1-7 participants, edit names, and assign visible colors/characters.
+- Betting mode: decide whether the first finisher, last finisher, or obstacle-hit/stun loser is caught.
+- Race feedback: fixed course, moving runners, obstacle jump/fail animations, stun state, finish ranking, and clear result panel.
 
 ### Later Ideas
 
-- 
+- Round history and local party scoreboard.
+- Character skins, obstacle themes, and item events.
+- Shareable result image for friends.
 
 ### Open Questions
 
-- 
+- Whether the default penalty target should be first finisher, last finisher, most stuns, or selectable before every race.
 
 ## Stack
 
@@ -62,7 +66,7 @@ Source: profile defaults until confirmed from real package/build files.
 
 ## Feature Areas
 
-- 
+- Games: existing `/games`, `/jump`, and `/dodge` routes, with planned party runner betting game under `src/components/page/games/`.
 
 ## Coding Conventions
 
