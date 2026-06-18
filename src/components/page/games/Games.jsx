@@ -21,6 +21,15 @@ const GAMES = [
     icon: "🚀",
     href: "/dodge",
   },
+  {
+    id: "snail-race",
+    title: "Snail Race",
+    description: "1명부터 7명까지 참가자를 고르고, 가장 먼저 또는 가장 늦게 도착한 달팽이를 벌칙 대상으로 뽑는 내기용 레이스입니다.",
+    tags: ["Betting", "Race", "Party"],
+    badge: "New",
+    icon: "🐌",
+    href: "/snail-race",
+  },
 ];
 
 const Games = () => {
