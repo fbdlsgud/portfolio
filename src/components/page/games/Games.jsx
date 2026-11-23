@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Games.module.css';
 
@@ -8,7 +7,6 @@ const GAMES = [
     title: "Duck Jump",
     description: "오리가 대나무 파이프 사이를 무사히 통과할 수 있게 도와주세요! 최고 점수에 도전해보세요.",
     tags: ["Arcade", "Canvas", "Gintama"],
-    badge: "New",
     icon: "🎮",
     href: "/jump",
   },
@@ -17,18 +15,8 @@ const GAMES = [
     title: "Duck Dodge",
     description: "우주 공간에서 쏟아지는 탄막을 피하세요! 오리의 생존 본능을 보여줄 때입니다 (Cosmic Edition).",
     tags: ["Arcade", "Dodging", "Cosmic"],
-    badge: "New",
     icon: "🚀",
     href: "/dodge",
-  },
-  {
-    id: "obstacle-race",
-    title: "Obstacle Race",
-    description: "1명부터 7명까지 자동으로 달리며 장애물을 점프하거나 실패해 스턴되는 내기용 횡스크롤 레이스입니다.",
-    tags: ["Party", "Runner", "Betting"],
-    badge: "New",
-    icon: "🏁",
-    href: "/obstacle-race",
   },
 ];
 
@@ -49,10 +37,7 @@ const Games = () => {
           <div className={styles.grid}>
             {GAMES.map((game) => (
               <Link key={game.id} to={game.href} className={styles.gameItem}>
-                <div className={styles.gameHeader}>
-                  <span className={styles.gameIcon}>{game.icon}</span>
-                  {game.badge && <span className={styles.badge}>{game.badge}</span>}
-                </div>
+                <span className={styles.gameIcon} aria-hidden="true">{game.icon}</span>
 
                 <h3 className={styles.gameTitle}>{game.title}</h3>
                 <p className={styles.gameDesc}>{game.description}</p>
@@ -72,12 +57,6 @@ const Games = () => {
                 </div>
               </Link>
             ))}
-
-            {/* Placeholder card */}
-            <div className={styles.placeholder}>
-              <span style={{ fontSize: '30px', marginBottom: '10px' }}>⏳</span>
-              <p>준비 중...</p>
-            </div>
           </div>
         </section>
       </div>

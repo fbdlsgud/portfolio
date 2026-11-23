@@ -20,6 +20,11 @@ jest.mock('axios', () => {
 });
 
 import App from './App';
+import axios from './axios/axiosInstance';
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 test('renders app navigation', async () => {
   await act(async () => {
@@ -29,4 +34,16 @@ test('renders app navigation', async () => {
   });
 
   expect(screen.getByText(/Games/i)).toBeInTheDocument();
+});
+
+test('keeps the main page usable when the API returns the SPA fallback', async () => {
+  jest.spyOn(axios, 'get').mockResolvedValue({ data: '<!doctype html><title>Fallback</title>' });
+
+  await act(async () => {
+    render(<App />);
+  });
+
+  expect(screen.getByRole('link', { name: 'Games' })).toBeInTheDocument();
+  expect(screen.getByText('최신 프로젝트', { exact: false })).toBeInTheDocument();
+  expect(screen.getByText('최신 댓글', { exact: false })).toBeInTheDocument();
 });

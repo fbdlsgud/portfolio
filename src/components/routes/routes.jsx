@@ -1,3 +1,5 @@
+import { Navigate } from "react-router-dom";
+
 import Main from "../page/main/Main";
 import About from "../page/about/About";
 import Project from "../page/project/Project";
@@ -5,7 +7,6 @@ import Board from "../page/board/Board";
 import Jump from "../page/games/Jump";
 import Dodge from "../page/games/Dodge";
 import Games from "../page/games/Games";
-import ObstacleRace from "../page/games/ObstacleRace";
 
 const routes = [
     { path: "/" , element: <Main /> },
@@ -15,7 +16,7 @@ const routes = [
     { path: "/games", element: <Games />},
     { path: "/jump", element: <Jump />},
     { path: "/dodge", element: <Dodge />},
-    { path: "/obstacle-race", element: <ObstacleRace />}
+    { path: "/obstacle-race", element: <Navigate to="/games" replace />}
 ]
 
 

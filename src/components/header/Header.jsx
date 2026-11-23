@@ -6,7 +6,7 @@ import { useLogin } from "../../context/LoginContext";
 
 function Header(){
   const location = useLocation(); // 현재 경로 확인
-  const isGamesRoute = ["/games", "/jump", "/dodge", "/obstacle-race"].includes(location.pathname);
+  const isGameScreen = location.pathname === "/jump" || location.pathname === "/dodge";
 
   const {username, setUsername} = useLogin();
 
@@ -23,6 +23,14 @@ function Header(){
     }
   }
 
+  if (isGameScreen) {
+    return (
+      <Link to="/games" className={styles.gameBack}>
+        <span aria-hidden="true">←</span> 게임 목록
+      </Link>
+    );
+  }
+
   return (
     <div className={styles.headerContainer}>
       <div className={styles.headerTitle}>
@@ -33,7 +41,7 @@ function Header(){
         <Link to="/about" className={`${styles.link} ${location.pathname === "/about" ? styles.active : ""}`}>About</Link>
         <Link to="/project" className={`${styles.link} ${location.pathname === "/project" ? styles.active : ""}`}>Project</Link>
         <Link to="/board" className={`${styles.link} ${location.pathname === "/board" ? styles.active : ""}`}>Board</Link>
-        <Link to="/games" className={`${styles.link} ${isGamesRoute ? styles.active : ""}`}>Games</Link>
+        <Link to="/games" className={`${styles.link} ${location.pathname === "/games" ? styles.active : ""}`}>Games</Link>
         {username?
         <div className={styles.loginName} onClick={logoutHandler}>{username} 관리자님</div>
         :

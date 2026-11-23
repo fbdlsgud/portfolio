@@ -10,53 +10,35 @@ function Main() {
   const [project, setProject] = useState([]);
   const [reply, setReply] = useState([]);
 
-  // useEffect(() => {
-  //   // ✅ 오늘/전체 방문자 수는 항상 가져와야 함
-  //   axios.get("/visit")
-  //     .then((res) => {
-  //       setToday(res.data.today);
-  //       setTotal(res.data.total);
-  //     })
-  //     .catch((err) => console.log(err));
-  // }, []);
-  
-  // useEffect(() => {
-  //   // ✅ 방문자 수 증가는 세션 기준으로 한 번만
-  //   const visited = sessionStorage.getItem("visited");
-  //   if (!visited) {
-  //     axios.get("/visit") // 이건 단순 증가만 수행 (count++ 저장)
-  //       .then(() => {
-  //         sessionStorage.setItem("visited", "true");
-  //       });
-  //   }
-  // }, []);
+  useEffect(() => {
+    async function loadVisitCounts() {
+      const shouldCountVisit = !sessionStorage.getItem("visited");
+      if (shouldCountVisit) {
+        await axios.get("/visit");
+      }
 
+      const { data } = await axios.get("/visitCount");
+      if (typeof data?.today !== "number" || typeof data?.total !== "number") {
+        return;
+      }
 
-  useEffect(()=>{
-    
-    if(!sessionStorage.getItem("visited")){
-      axios.get("/visit")
-      .then(()=>{        
-        return axios.get("/visitCount");
-      })
-      .then((res)=>{setToday(res.data.today); setTotal(res.data.total); sessionStorage.setItem("visited","true");})
-      .catch((err)=>{console.log(err)})
-    }
-    else {
-      axios.get("/visitCount")
-      .then((res)=>{setToday(res.data.today); setTotal(res.data.total); })
-      .catch((err)=>{console.log(err)})
+      setToday(data.today);
+      setTotal(data.total);
+      if (shouldCountVisit) {
+        sessionStorage.setItem("visited", "true");
+      }
     }
 
-},[])
-
-
+    loadVisitCounts().catch((err) => console.log(err));
+  }, []);
 
   useEffect(() => {
     axios
       .get("/projectLatest")
       .then((res) => {
-        setProject(res.data);
+        if (Array.isArray(res.data)) {
+          setProject(res.data);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -65,7 +47,9 @@ function Main() {
     axios
       .get("/replyLatest")
       .then((res) => {
-        setReply(res.data);
+        if (Array.isArray(res.data)) {
+          setReply(res.data);
+        }
       })
       .catch((err) => {
         console.log(err);
