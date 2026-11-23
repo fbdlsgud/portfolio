@@ -1,0 +1,14 @@
+:80 {
+	@apex host ryudoll-dev.com
+	redir @apex https://www.ryudoll-dev.com{uri} 308
+
+	handle_path /api/* {
+		reverse_proxy api:8070
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

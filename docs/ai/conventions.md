@@ -2,8 +2,8 @@
 
 ## Project Summary
 
-- Name:
-- Purpose:
+- Name: Portfolio
+- Purpose: Personal portfolio and browser games
 - Main users:
 - Current phase:
 
@@ -27,38 +27,31 @@
 
 ## Stack
 
-- Frontend:
-- Backend:
-- Database:
-- Mobile:
-- Package manager:
+- Frontend: React with Create React App
+- Backend: Spring Boot on Java 17
+- Database: MySQL
+- Package managers: npm and Gradle Wrapper
 
 ## Directory Structure
 
 ```text
-src/
-├── features/
-│   └── <feature>/
-├── shared/
-│   ├── api/
-│   ├── services/
-│   ├── ui/
-│   └── utils/
-└── app/
+frontend/  React app
+backend/   Spring Boot API
+deploy/    Docker Compose and Caddy
+docs/ai/   Shared project conventions and work records
 ```
 
 ## Commands
 
-Source: profile defaults until confirmed from real package/build files.
+Run commands from the repository root.
 
 | Purpose | Command |
 |---|---|
-| install | |
-| dev | |
-| lint | |
-| typecheck | |
-| test | |
-| build | |
+| Frontend install | `npm --prefix frontend ci` |
+| Frontend development | `npm --prefix frontend start` |
+| Frontend test | `npm --prefix frontend test -- --watchAll=false` |
+| Frontend build | `npm --prefix frontend run build` |
+| Backend build | `cd backend && ./gradlew bootJar` |
 
 ## Feature Areas
 
@@ -66,9 +59,9 @@ Source: profile defaults until confirmed from real package/build files.
 
 ## Coding Conventions
 
-- Organize app code by feature under `src/features`.
-- Keep shared UI, utilities, constants, and cross-feature helpers under `src/shared`.
-- Keep API clients, Firebase clients, or external service wrappers under `src/shared/api` or `src/shared/services`.
+- Organize app code by feature under `frontend/src/features`.
+- Keep shared UI, utilities, constants, and cross-feature helpers under `frontend/src/shared`.
+- Keep API clients, Firebase clients, or external service wrappers under `frontend/src/shared/api` or `src/shared/services`.
 - Keep feature-specific components, hooks, screens, models, and services inside that feature's folder.
 
 ## UI Conventions

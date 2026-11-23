@@ -1,30 +1,32 @@
 # Installed from Agentic Dev Kit profile: react-vite
 
 project:
-  name: ""
+  name: portfolio
   profile: "react-vite"
-  description: "React react-scripts frontend project"
+  description: "React and Spring Boot portfolio monorepo"
 
 
 stack:
   frontend: React react-scripts
-  backend: ""
-  database: ""
-  package_manager: npm
+  backend: Spring Boot 3.4.5 (Java 17)
+  database: MySQL
+  package_manager: npm and Gradle Wrapper
 
 paths:
-  frontend: src
-  backend: ""
+  frontend: frontend
+  backend: backend
+  deploy: deploy
   docs: docs
   ai_docs: docs/ai
 
 commands:
-  install: npm install
-  dev: npm run start
+  install: npm --prefix frontend ci
+  dev: npm --prefix frontend start
   lint: ""
   typecheck: ""
-  test: npm run test
-  build: npm run build
+  test: npm --prefix frontend test -- --watchAll=false
+  build: npm --prefix frontend run build
+  backend_build: cd backend && ./gradlew bootJar
 
 quality:
   required_before_done:
@@ -37,7 +39,7 @@ quality:
 command_policy:
   source: "detected-project-files"
   confirm_before_first_use: false
-  notes: "Commands reviewed from package.json during project onboarding."
+  notes: "Commands verified against frontend/package.json and backend/build.gradle."
 
 agent:
   default_workflow: "implement"
