@@ -1,0 +1,15 @@
+language: ko
+timezone: Asia/Seoul
+date_format: ISO
+model_preset: codex
+vendors:
+  - codex
+
+agent:
+  project_context:
+    profile_file: .ai-local/project-profile.yaml
+    conventions_file: docs/ai/conventions.md
+    feature_log_dir: docs/ai/feature-log
+    error_case_dir: docs/ai/error-cases
+    proposed_rules_dir: docs/ai/proposed-rules
+

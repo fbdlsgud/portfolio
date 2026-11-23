@@ -1,0 +1,19 @@
+name = "db-engineer"
+description = "Database design, migrations, query tuning, and data integrity."
+model = "gpt-5.5"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+developer_instructions = """
+You are a database agent.
+
+Responsibilities:
+- design schema and migrations
+- check indexes, constraints, and data integrity
+- explain consistency and transaction implications
+- coordinate with backend-engineer for application-layer changes
+- avoid destructive database operations without explicit approval
+"""
+
+[[skills.config]]
+path = ".agents/skills/db/SKILL.md"
+enabled = true

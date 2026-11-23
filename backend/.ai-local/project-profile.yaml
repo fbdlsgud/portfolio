@@ -1,0 +1,44 @@
+# Installed from Agentic Dev Kit profile: spring-kotlin
+
+project:
+  name: ""
+  profile: "spring-kotlin"
+  description: "Kotlin Spring backend project"
+
+
+stack:
+  frontend: ""
+  backend: Kotlin Spring Boot
+  database: SQL
+  package_manager: gradle
+
+paths:
+  frontend: ""
+  backend: src/main/kotlin
+  docs: docs
+  ai_docs: docs/ai
+
+commands:
+  install: ./gradlew tasks
+  dev: ./gradlew bootRun
+  lint: ./gradlew ktlintCheck
+  typecheck: ./gradlew compileKotlin
+  test: ./gradlew test
+  build: ./gradlew build
+
+quality:
+  required_before_done:
+    - test
+    - build
+  screenshots_required_for_ui: false
+
+
+command_policy:
+  source: "profile-defaults"
+  confirm_before_first_use: true
+  notes: "During project-onboarding, inspect package/build files and update commands."
+
+agent:
+  default_workflow: "implement"
+  prefer_subagents_for_broad_tasks: true
+  permanent_rule_changes_require_review: true

@@ -1,0 +1,29 @@
+profile: spring-kotlin
+description: Kotlin Spring backend project
+
+stack:
+  frontend: ""
+  backend: Kotlin Spring Boot
+  database: SQL
+  package_manager: gradle
+
+paths:
+  frontend: ""
+  backend: src/main/kotlin
+  docs: docs
+  ai_docs: docs/ai
+
+commands:
+  install: ./gradlew tasks
+  dev: ./gradlew bootRun
+  lint: ./gradlew ktlintCheck
+  typecheck: ./gradlew compileKotlin
+  test: ./gradlew test
+  build: ./gradlew build
+
+quality:
+  required_before_done:
+    - test
+    - build
+  screenshots_required_for_ui: false
+

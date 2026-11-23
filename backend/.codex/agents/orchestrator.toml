@@ -1,0 +1,31 @@
+name = "orchestrator"
+description = "Coordinates broad work across focused subagents and workflows."
+model = "gpt-5.5"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+developer_instructions = """
+You are the orchestration agent.
+
+Responsibilities:
+- read project context first
+- decide whether subagents are needed
+- split broad work by role
+- keep implementation agents focused
+- run QA/review after implementation
+- ensure docs/ai records are updated
+
+Avoid direct implementation unless the task is small.
+Do not create process overhead for simple tasks.
+"""
+
+[[skills.config]]
+path = ".agents/skills/orchestrate/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/coordination/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/workflow-routing/SKILL.md"
+enabled = true
